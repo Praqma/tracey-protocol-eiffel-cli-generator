@@ -1,0 +1,48 @@
+apply plugin: 'application'
+apply plugin: 'maven-publish'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    compile 'net.sourceforge.argparse4j:argparse4j:0.7.0'
+    compile 'com.github.Praqma:tracey-protocol-eiffel:drop1'    
+}
+
+version = 'drop1'
+mainClassName = 'net.praqma.tracey.protocol.eiffel.cli.Main'
+
+task uberjar(type: Jar) {
+    from files(sourceSets.main.output.classesDir)
+    from {configurations.compile.collect {zipTree(it)}} {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    manifest {
+    	attributes 'Main-Class': mainClassName
+    }
+}
+
+/*
+task uberjar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+
+    manifest {
+        attributes 'Main-Class': 'net.praqma.tracey.protocol.eiffel.cli.Main'
+    }
+}*/
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'net.praqma.tracey.protocol.eiffel.cli'
+            artifactId 'tracey-protocol-eiffel-cli-generator'
+            from components.java
+        }
+    }
+}
