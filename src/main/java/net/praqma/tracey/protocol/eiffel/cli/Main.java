@@ -61,11 +61,13 @@ public class Main {
         event.addAllLinks(links);
 
         if (ns.getString("file") != null) {
-            File f = new File("example.json");
+            File f = new File(ns.getString("file"));
+
             if(f.exists()) {
                 f.delete();
             }
-            try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("example.json"), "utf-8"))) {
+
+            try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(ns.getString("file")), "utf-8"))) {
                 writer.write(JsonFormat.printer().print(event));
             }
         } else {
