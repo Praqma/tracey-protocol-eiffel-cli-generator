@@ -33,8 +33,8 @@ public class Main {
                 .description("Generate Eiffel messages");
         Subparsers subparsers = parser.addSubparsers();
         Subparser eiffelSourceChangeCreatedEvent = subparsers.addParser("EiffelSourceChangeCreatedEvent");
-        parser.addArgument("-f", "--file").dest("file").help("Path to the file to save generated message");
-        parser.addArgument("-d", "--debug").dest("debug").action(Arguments.storeTrue()).setDefault(false).help("Output debug logs");
+        eiffelSourceChangeCreatedEvent.addArgument("-f", "--file").dest("file").help("Path to the file to save generated message");
+        eiffelSourceChangeCreatedEvent.addArgument("-d", "--debug").dest("debug").action(Arguments.storeTrue()).setDefault(false).help("Output debug logs");
         Namespace ns = null;
         try {
             ns = parser.parseArgs(args);

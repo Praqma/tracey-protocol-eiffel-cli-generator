@@ -7,17 +7,16 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
     compile 'net.sourceforge.argparse4j:argparse4j:0.7.0'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.21'
     compile('com.github.Praqma:tracey-protocol-eiffel:master') {
         changing = true
     }
-}
-
-
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
 mainClassName = 'net.praqma.tracey.protocol.eiffel.cli.Main'
@@ -28,7 +27,7 @@ task runDebug(type: JavaExec, dependsOn: classes) {
     args(['EiffelSourceChangeCreatedEvent', '-f', 'out.json'])
 }
 
-task uberjar(type: Jar) {
+task uberjar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
     from files(sourceSets.main.output.classesDir)
     from {configurations.compile.collect {zipTree(it)}} {
         exclude "META-INF/*.SF"
