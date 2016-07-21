@@ -17,3 +17,7 @@ gradle-app.setting
 
 # Ignore output files
 *.json
+
+# Idea
+.idea
+*.iml
