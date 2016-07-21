@@ -1,5 +1,25 @@
 apply plugin: 'application'
 apply plugin: 'maven-publish'
+apply plugin: 'com.palantir.git-version'
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.0'
+        classpath 'gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.5.2'
+    }
+}
+
+def groupId = 'net.praqma.tracey.protocol.eiffel.cli'
+def artifactId = 'tracey-protocol-eiffel-cli-generator'
+def version = gitVersion()
+mainClassName = 'net.praqma.tracey.protocol.eiffel.cli.Main'
 
 repositories {
     mavenLocal()
@@ -13,18 +33,18 @@ configurations.all {
 
 dependencies {
     compile 'net.sourceforge.argparse4j:argparse4j:0.7.0'
-    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.21'
-    compile('com.github.Praqma:tracey-protocol-eiffel:master') {
-        changing = true
-    }
+    compile 'org.slf4j:slf4j-log4j12:1.7.21'
+    compile 'com.github.Praqma:tracey-protocol-eiffel:d0317b72f3'
+    compile 'com.github.Praqma:commit-message-parser:5517b84b0a'
+    compile 'com.jcabi:jcabi-manifests:1.1'
 }
 
-mainClassName = 'net.praqma.tracey.protocol.eiffel.cli.Main'
+
 
 task runDebug(type: JavaExec, dependsOn: classes) {
     main = mainClassName
     classpath = sourceSets.main.runtimeClasspath
-    args(['EiffelSourceChangeCreatedEvent', '-f', 'out.json'])
+    args(['-d', '-f', 'out.json', '-i', 'myDomain', 'EiffelSourceChangeCreatedEvent', '-p', 'Praqma/tracey-protocol-eiffel-cli-generator'])
 }
 
 jar {
@@ -33,15 +53,16 @@ jar {
     }
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
     manifest {
-    	attributes 'Main-Class': mainClassName
+        attributes('Main-Class': mainClassName,
+                   'Implementation-Version': version,
+                   'Implementation-Title': artifactId,
+                   'Implementation-Vendor': groupId)
     }
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId 'net.praqma.tracey.protocol.eiffel.cli'
-            artifactId 'tracey-protocol-eiffel-cli-generator'
             from components.java
         }
     }
