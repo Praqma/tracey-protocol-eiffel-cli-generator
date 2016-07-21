@@ -131,8 +131,8 @@ public class Main {
         if (ns.getString("file") != null) {
             File f = new File(ns.getString("file"));
 
-            if(f.exists()) {
-                f.delete();
+            if(f.exists() && f.delete()) {
+                log.warning("Couldn't remove " + f.toString() + ". Well, we will overwrite anyway if we can");
             }
 
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(ns.getString("file")), "utf-8"))) {

@@ -1,7 +1,9 @@
 apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'com.palantir.git-version'
-
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
 
 buildscript {
     repositories {
@@ -37,9 +39,10 @@ dependencies {
     compile 'com.github.Praqma:tracey-protocol-eiffel:d0317b72f3'
     compile 'com.github.Praqma:commit-message-parser:5517b84b0a'
     compile 'com.jcabi:jcabi-manifests:1.1'
+    checkstyle 'com.puppycrawl.tools:checkstyle:5.9'
+    pmd        'net.sourceforge.pmd:pmd-java:5.2.3'
+    findbugs   'com.google.code.findbugs:findbugs:3.0.1'
 }
-
-
 
 task runDebug(type: JavaExec, dependsOn: classes) {
     main = mainClassName
@@ -65,5 +68,14 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
         }
+    }
+}
+
+// Static code analysis
+tasks.withType(FindBugs) {
+    ignoreFailures false
+    reports {
+    xml.enabled false
+        html.enabled true
     }
 }
