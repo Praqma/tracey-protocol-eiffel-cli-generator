@@ -10,47 +10,49 @@ Supported messages:
 * EiffelSourceChangeCreatedEvent (message will be generated from the current commit, more options to come)
 
 ```
-$ ./gradlew uberjar
-$ java -jar build/libs/tracey-protocol-eiffel-cli-generator-drop1.jar EiffelSourceChangeCreatedEvent
-SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-Jul 08, 2016 8:54:59 AM net.praqma.tracey.protocol.eiffel.cli.Main main
-INFO: {
+$ ./gradlew build
+$ java -jar build/libs/tracey-protocol-eiffel-cli-generator.jar EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffel-cli-generator -c HEAD~1
+0 [main] WARN net.praqma.tracey.protocol.eiffel.cli.Main  - {
   "meta": {
-    "id": "375c88c2-07cd-43c5-b3cf-b9ad23197087",
+    "id": "f8a8bca7-cbc1-4f4a-904a-226acbd66208",
     "type": "EiffelSourceChangeCreatedEvent",
-    "time": "1467960899468",
+    "time": "1469130192472",
     "source": {
-      "domainId": "domainId",
-      "host": "host",
-      "name": "name",
-      "uri": "uri",
+      "host": "Andreys-MacBook-Pro.local",
+      "name": "Eiffel command line generator",
+      "uri": "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator",
       "serializer": {
-        "groupId": "group",
-        "artifactId": "id",
-        "version": "1.0.0"
+        "groupId": "net.praqma.tracey.protocol.eiffel.cli",
+        "artifactId": "tracey-protocol-eiffel-cli-generator",
+        "version": "drop1-10-gc7704af.dirty"
       }
     }
   },
   "links": [{
     "type": "PREVIOUS_VERSION",
-    "id": "6c5ffc66-2bd5-46f4-ab0a-837d49888da5"
+    "id": "de3b7468-67b1-4f46-8ecc-a8ac251845f6"
   }, {
     "type": "CAUSE",
-    "id": "d4e6e737-c0e1-4b1a-b2fd-82b059d60007"
+    "id": "a0e42d9d-0ccc-4a79-a2b3-676a40632018"
   }],
   "data": {
     "author": {
       "name": "Andrey Devyatkin",
       "email": "andrey.a.devyatkin@gmail.com"
     },
+    "issues": [{
+      "id": "7",
+      "transition": "RESOLVED",
+      "uri": "http://github.com/Praqma/tracey-protocol-eiffel-cli-generator/issues/7",
+      "trackerType": "GitHub"
+    }],
     "change": {
-      "insertions": 133,
-      "files": ["ADD .travis.yml", "ADD build.gradle", "ADD src/main/java/net/praqma/tracey/protocol/eiffel/cli/Main.java"]
+      "insertions": 28,
+      "deletions": 6,
+      "files": ["MODIFY .travis.yml", "MODIFY build.gradle", "ADD config/checkstyle/checkstyle.xml", "MODIFY src/main/java/net/praqma/tracey/protocol/eiffel/cli/Main.java"]
     },
     "gitIdentifier": {
-      "commitId": "a25bcbf244555bfb00b40376ec0ebf3872cd8eb3",
+      "commitId": "c2bb5a9f7dbfabdcdba9957128ce5387963e32c1",
       "branch": "master",
       "repoName": "tracey-protocol-eiffel-cli-generator",
       "repoUri": "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator.git"
