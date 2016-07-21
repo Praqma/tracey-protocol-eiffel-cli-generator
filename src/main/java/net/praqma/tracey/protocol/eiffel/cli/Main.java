@@ -19,13 +19,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import com.google.protobuf.util.JsonFormat;
 import net.praqma.utils.parsers.cmg.api.CommitMessageParser;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.*;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 public class Main {
     private static final Logger log = Logger.getLogger(Main.class.getName());
@@ -35,6 +37,11 @@ public class Main {
     private static final String uri = "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator";
 
     public static void main (String[] args) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+
+        // To avoid log4j printouts when the program starts
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.WARN);
+
         // TODO: move CLI arguments to a separate class
         ArgumentParser parser = ArgumentParsers.newArgumentParser("generator")
                 .defaultHelp(true)
@@ -80,10 +87,11 @@ public class Main {
             System.exit(1);
         }
 
+        Logger rootLog = Logger.getLogger("");
         if (ns.getBoolean("debug") == true) {
-            Logger rootLog = Logger.getLogger("");
-            rootLog.setLevel( Level.FINE );
-            rootLog.getHandlers()[0].setLevel( Level.FINE );
+            rootLog.setLevel( Level.DEBUG );
+        } else {
+            rootLog.setLevel( Level.WARN );
         }
 
         // TODO: Create a separate class per positional argument
@@ -95,17 +103,17 @@ public class Main {
             try {
                 cmgParser = (CommitMessageParser) constructor.newInstance(new URL(ns.getString("url")), ns.getString("project"));
             } catch (InstantiationException instantiationException) {
-                log.severe("Internal error! Can't instantiate commit message parser\n" + instantiationException);
+                log.warn("Internal error! Can't instantiate commit message parser\n" + instantiationException);
                 System.exit(1);
             }
         } else {
-            log.severe("Tracker type " + ns.getString("tracker") + " not supported. Supported types are " + supportedParsers.toString());
+            log.warn("Tracker type " + ns.getString("tracker") + " not supported. Supported types are " + supportedParsers.toString());
             System.exit(1);
         }
         final List<Link> links = new ArrayList<>();
         links.add(Link.newBuilder().setType(Link.LinkType.PREVIOUS_VERSION).setId(UUID.randomUUID().toString()).build());
         links.add(Link.newBuilder().setType(Link.LinkType.CAUSE).setId(UUID.randomUUID().toString()).build());
-        log.fine(cmgParser.getClass().toString());
+        log.debug(cmgParser.getClass().toString());
         factory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(),
                 ns.getString("commit"),
                 ns.getString("branch"),
@@ -117,14 +125,14 @@ public class Main {
             File f = new File(ns.getString("file"));
 
             if(f.exists() && f.delete()) {
-                log.warning("Couldn't remove " + f.toString() + ". Well, we will overwrite anyway if we can");
+                log.warn("Couldn't remove " + f.toString() + ". Well, we will overwrite anyway if we can");
             }
 
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(ns.getString("file")), "utf-8"))) {
                 writer.write(JsonFormat.printer().print(event));
             }
         } else {
-            log.info(JsonFormat.printer().print(event));
+            log.warn(JsonFormat.printer().print(event));
         }
     }
 }

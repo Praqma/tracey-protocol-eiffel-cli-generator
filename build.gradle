@@ -13,7 +13,6 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.0'
         classpath 'gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.5.2'
     }
 }
@@ -36,8 +35,8 @@ configurations.all {
 dependencies {
     compile 'net.sourceforge.argparse4j:argparse4j:0.7.0'
     compile 'org.slf4j:slf4j-log4j12:1.7.21'
-    compile 'com.github.Praqma:tracey-protocol-eiffel:1e124c10a5'
-    compile 'com.github.Praqma:commit-message-parser:5517b84b0a'
+    compile 'com.github.Praqma:tracey-protocol-eiffel:e70358f969'
+    compile 'com.github.Praqma:commit-message-parser:8834a4b0fe'
     checkstyle 'com.puppycrawl.tools:checkstyle:5.9'
     pmd        'net.sourceforge.pmd:pmd-java:5.2.3'
     findbugs   'com.google.code.findbugs:findbugs:3.0.1'
