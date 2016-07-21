@@ -4,20 +4,16 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import com.jcabi.manifests.Manifests;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
 import net.praqma.tracey.protocol.eiffel.factories.EiffelSourceChangeCreatedEventFactory;
 import net.praqma.tracey.protocol.eiffel.models.Models.Link;
-import net.praqma.tracey.protocol.eiffel.models.Models.Data.GAV;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,19 +86,8 @@ public class Main {
             rootLog.getHandlers()[0].setLevel( Level.FINE );
         }
 
-
-        GAV gav = GAV.newBuilder()
-                .setGroupId(Manifests.read("Implementation-Vendor"))
-                .setArtifactId(Manifests.read("Implementation-Title"))
-                .setVersion(Manifests.read("Implementation-Version"))
-                .build();
-
         // TODO: Create a separate class per positional argument
-        final EiffelSourceChangeCreatedEventFactory factory = new EiffelSourceChangeCreatedEventFactory(getHostName(),
-                name,
-                uri,
-                ns.getString("domainId"),
-                gav);
+        final EiffelSourceChangeCreatedEventFactory factory = new EiffelSourceChangeCreatedEventFactory(name, uri, ns.getString("domainId"));
         CommitMessageParser cmgParser = null;
         if (supportedParsers.contains(ns.getString("tracker"))) {
             Class<?> parserClass = Class.forName("net.praqma.utils.parsers.cmg.impl." + ns.getString("tracker"));
@@ -141,18 +126,5 @@ public class Main {
         } else {
             log.info(JsonFormat.printer().print(event));
         }
-    }
-
-    private static String getHostName() {
-        String hostname = "Unknown";
-        try
-        {
-            hostname = InetAddress.getLocalHost().getHostName();
-        }
-        catch (UnknownHostException e) {
-            log.warning("Hostname can not be resolved due to the following. Use " + hostname + " as a hostname\n" + e.getMessage());
-        }
-        log.fine("Retunr hostname: " + hostname);
-        return hostname;
     }
 }
