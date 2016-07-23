@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/Praqma/tracey-protocol-eiffel-cli-generator.svg?branch=master)](https://travis-ci.org/Praqma/tracey-protocol-eiffel-cli-generator)
+
 # CLI generator for Eiffel messages
 
 Note! This repo is still work in progress
