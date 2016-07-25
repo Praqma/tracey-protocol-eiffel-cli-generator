@@ -15,9 +15,9 @@ public class EiffelSourceChangeCreatedParser {
     private static final Logger LOG = Logger.getLogger(EiffelSourceChangeCreatedParser.class.getName());
     public static final List<String> SUPPORTEDPARSERS = Arrays.asList("GitHub", "Jira");
 
-    private Subparser parser;
+    private final Subparser parser;
 
-    public EiffelSourceChangeCreatedParser(Subparser parser) {
+    public EiffelSourceChangeCreatedParser(final Subparser parser) {
         this.parser = parser;
         parser.addArgument("-t", "--tracker")
                 .dest("tracker")

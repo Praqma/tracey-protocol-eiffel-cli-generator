@@ -16,7 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,6 +54,9 @@ public class Main {
         Subparser eiffelSourceChangeCreatedEvent = subparsers.addParser("EiffelSourceChangeCreatedEvent");
         EiffelSourceChangeCreatedParser eiffelparser = new EiffelSourceChangeCreatedParser(eiffelSourceChangeCreatedEvent);
 
+        // Aritfacts parser
+        Subparser artifacts = subparsers.addParser("EiffelArtifactCreatedEvent");
+        EiffelArtifactCreatedEventParser artifactparser = new EiffelArtifactCreatedEventParser(artifacts);
 
         Namespace ns = null;
         try {
@@ -92,9 +94,9 @@ public class Main {
         links.add(Link.newBuilder().setType(Link.LinkType.CAUSE).setId(UUID.randomUUID().toString()).build());
         LOG.debug(cmgParser.getClass().toString());
         factory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(),
-                ns.getString("commit"),
-                ns.getString("branch"),
-                cmgParser);
+            ns.getString("commit"),
+            ns.getString("branch"),
+            cmgParser);
         final EiffelSourceChangeCreatedEvent.Builder event = (EiffelSourceChangeCreatedEvent.Builder) factory.create();
         event.addAllLinks(links);
 
