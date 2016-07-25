@@ -30,11 +30,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
 public class Main {
-    private static final Logger log = Logger.getLogger(Main.class.getName());
+    private static final Logger LOG = Logger.getLogger(Main.class.getName());
     // TODO: create enum with tracker types?
-    private static final List<String> supportedParsers = Arrays.asList("GitHub", "Jira");
-    private static final String name = "Eiffel command line generator";
-    private static final String uri = "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator";
+    private static final List<String> SUPPORTEDPARSERS = Arrays.asList("GitHub", "Jira");
+    private static final String NAME = "Eiffel command line generator";
+    private static final String URI = "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator";
 
     public static void main (String[] args) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
@@ -58,7 +58,7 @@ public class Main {
                 .dest("tracker")
                 .help("Type of issue tracking system to use when generation URL for issues parsed from the commit message. Assuming GitHub if not set.")
                 .setDefault("GitHub")
-                .choices(supportedParsers);
+                .choices(SUPPORTEDPARSERS);
         eiffelSourceChangeCreatedEvent.addArgument("-u", "--url")
                 .dest("url")
                 .help("URL of issue tracker. Will be used for parsed issues URL generation. Assume http://github.com if not set")
@@ -95,25 +95,25 @@ public class Main {
         }
 
         // TODO: Create a separate class per positional argument
-        final EiffelSourceChangeCreatedEventFactory factory = new EiffelSourceChangeCreatedEventFactory(name, uri, ns.getString("domainId"));
+        final EiffelSourceChangeCreatedEventFactory factory = new EiffelSourceChangeCreatedEventFactory(NAME, URI, ns.getString("domainId"));
         CommitMessageParser cmgParser = null;
-        if (supportedParsers.contains(ns.getString("tracker"))) {
+        if (SUPPORTEDPARSERS.contains(ns.getString("tracker"))) {
             Class<?> parserClass = Class.forName("net.praqma.utils.parsers.cmg.impl." + ns.getString("tracker"));
             Constructor<?> constructor = parserClass.getConstructor(URL.class, String.class);
             try {
                 cmgParser = (CommitMessageParser) constructor.newInstance(new URL(ns.getString("url")), ns.getString("project"));
             } catch (InstantiationException instantiationException) {
-                log.warn("Internal error! Can't instantiate commit message parser\n" + instantiationException);
+                LOG.warn("Internal error! Can't instantiate commit message parser\n" + instantiationException);
                 System.exit(1);
             }
         } else {
-            log.warn("Tracker type " + ns.getString("tracker") + " not supported. Supported types are " + supportedParsers.toString());
+            LOG.warn("Tracker type " + ns.getString("tracker") + " not supported. Supported types are " + SUPPORTEDPARSERS.toString());
             System.exit(1);
         }
         final List<Link> links = new ArrayList<>();
         links.add(Link.newBuilder().setType(Link.LinkType.PREVIOUS_VERSION).setId(UUID.randomUUID().toString()).build());
         links.add(Link.newBuilder().setType(Link.LinkType.CAUSE).setId(UUID.randomUUID().toString()).build());
-        log.debug(cmgParser.getClass().toString());
+        LOG.debug(cmgParser.getClass().toString());
         factory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(),
                 ns.getString("commit"),
                 ns.getString("branch"),
@@ -125,14 +125,14 @@ public class Main {
             File f = new File(ns.getString("file"));
 
             if(f.exists() && f.delete()) {
-                log.warn("Couldn't remove " + f.toString() + ". Well, we will overwrite anyway if we can");
+                LOG.warn("Couldn't remove " + f.toString() + ". Well, we will overwrite anyway if we can");
             }
 
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(ns.getString("file")), "utf-8"))) {
                 writer.write(JsonFormat.printer().print(event));
             }
         } else {
-            log.warn(JsonFormat.printer().print(event));
+            LOG.warn(JsonFormat.printer().print(event));
         }
     }
 }
