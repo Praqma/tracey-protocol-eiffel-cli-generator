@@ -31,8 +31,7 @@ import org.apache.log4j.Level;
 
 public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
-    // TODO: create enum with tracker types?
-    private static final List<String> SUPPORTEDPARSERS = Arrays.asList("GitHub", "Jira");
+
     private static final String NAME = "Eiffel command line generator";
     private static final String URI = "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator";
 
@@ -54,30 +53,8 @@ public class Main {
         Subparsers subparsers = parser.addSubparsers();
         // Options per positional argument
         Subparser eiffelSourceChangeCreatedEvent = subparsers.addParser("EiffelSourceChangeCreatedEvent");
-        eiffelSourceChangeCreatedEvent.addArgument("-t", "--tracker")
-                .dest("tracker")
-                .help("Type of issue tracking system to use when generation URL for issues parsed from the commit message. Assuming GitHub if not set.")
-                .setDefault("GitHub")
-                .choices(SUPPORTEDPARSERS);
-        eiffelSourceChangeCreatedEvent.addArgument("-u", "--url")
-                .dest("url")
-                .help("URL of issue tracker. Will be used for parsed issues URL generation. Assume http://github.com if not set")
-                .setDefault("http://github.com");
-        eiffelSourceChangeCreatedEvent.addArgument("-p", "--project")
-                .dest("project")
-                .help("Project that issue belongs to. Will be used for parsed issues URL generation.");
-        eiffelSourceChangeCreatedEvent.addArgument("-r", "--repo")
-                .dest("repo")
-                .help("Path to repo that contains commit you want to parse. Assuming current directory if not set")
-                .setDefault(".");
-        eiffelSourceChangeCreatedEvent.addArgument("-c", "--commitId")
-                .dest("commit")
-                .help("sha1 to parse and generate message for. Assuming HEAD if not set")
-                .setDefault("HEAD");
-        eiffelSourceChangeCreatedEvent.addArgument("-b", "--branch")
-                .dest("branch")
-                .help("branch name to specify in the message - we can't guess branch automatically since commit might belong to multiple branches. Assuming master if not set")
-                .setDefault("master");
+        EiffelSourceChangeCreatedParser eiffelparser = new EiffelSourceChangeCreatedParser(eiffelSourceChangeCreatedEvent);
+
 
         Namespace ns = null;
         try {
@@ -97,7 +74,7 @@ public class Main {
         // TODO: Create a separate class per positional argument
         final EiffelSourceChangeCreatedEventFactory factory = new EiffelSourceChangeCreatedEventFactory(NAME, URI, ns.getString("domainId"));
         CommitMessageParser cmgParser = null;
-        if (SUPPORTEDPARSERS.contains(ns.getString("tracker"))) {
+        if (eiffelparser.supports(ns.getString("tracker"))) {
             Class<?> parserClass = Class.forName("net.praqma.utils.parsers.cmg.impl." + ns.getString("tracker"));
             Constructor<?> constructor = parserClass.getConstructor(URL.class, String.class);
             try {
@@ -107,9 +84,9 @@ public class Main {
                 System.exit(1);
             }
         } else {
-            LOG.warn("Tracker type " + ns.getString("tracker") + " not supported. Supported types are " + SUPPORTEDPARSERS.toString());
             System.exit(1);
         }
+
         final List<Link> links = new ArrayList<>();
         links.add(Link.newBuilder().setType(Link.LinkType.PREVIOUS_VERSION).setId(UUID.randomUUID().toString()).build());
         links.add(Link.newBuilder().setType(Link.LinkType.CAUSE).setId(UUID.randomUUID().toString()).build());
