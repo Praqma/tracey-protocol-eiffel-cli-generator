@@ -13,9 +13,9 @@ Allows to extract data from different sources and generate corresponding Eiffel 
 
 message will be generated from the current commit, more options to come.
 
-**Example command:** `EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffel-cli-generator -c HEAD~1`
+**Example command** `EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffel-cli-generator -c HEAD~1`
 
-**Output:** 
+**Output** 
 
 ```
 {
@@ -69,9 +69,9 @@ message will be generated from the current commit, more options to come.
 
 ### EiffelCompositionDefinedEvent
 
-**Example command:** `tracey-protocol-eiffel-cli-generator.jar EiffelCompositionDefinedEvent -n Composition_A -l CAUSE:8a718a03-f473-4e61-9bae-e986885fee18`
+**Example command** `tracey-protocol-eiffel-cli-generator.jar EiffelCompositionDefinedEvent -n Composition_A -l CAUSE:8a718a03-f473-4e61-9bae-e986885fee18`
 
-**Output:** 
+**Output** 
 
 ```
 {
@@ -96,6 +96,47 @@ message will be generated from the current commit, more options to come.
   }],
   "data": {
     "name": "Compsition_A"
+  }
+}
+```
+
+### EiffelArtifactCreatedEvent
+
+Creates an artifact created event. Use with the `-m` option to point to a pom file for parsing maven projects.
+
+**Example command:** `EiffelArtifactCreatedEvent -l CAUSE:8a718a03-f473-4e61-9bae-e986885fee18 -c "mvn clean package" -a artifact-one -w 1.0 -g artifact-group`
+
+**Output**
+
+```
+
+{
+  "meta": {
+    "id": "f49c5ecc-e48f-42ad-b870-465ddd1c6292",
+    "type": "EiffelArtifactCreatedEvent",
+    "time": "1469536428257",
+    "source": {
+      "host": "mads-notebook",
+      "name": "Eiffel command line generator",
+      "uri": "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator",
+      "serializer": {
+        "groupId": "org.eclipse.jgit",
+        "artifactId": "slf4j-log4j12",
+        "version": "1.7.21"
+      }
+    }
+  },
+  "links": [{
+    "type": "CAUSE",
+    "id": "8a718a03-f473-4e61-9bae-e986885fee18"
+  }],
+  "data": {
+    "gav": {
+      "groupId": "artifact-group",
+      "artifactId": "artifact-one",
+      "version": "1.0"
+    },
+    "buildCommand": "mvn clean package"
   }
 }
 ```

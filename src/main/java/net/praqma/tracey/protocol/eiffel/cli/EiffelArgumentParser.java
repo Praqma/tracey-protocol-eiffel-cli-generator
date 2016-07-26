@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.UUID;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
+import net.praqma.tracey.protocol.eiffel.factories.BaseFactory;
+import net.praqma.tracey.protocol.eiffel.factories.EiffelArtifactCreatedEventFactory;
 import net.praqma.tracey.protocol.eiffel.factories.EiffelCompositionDefinedEventFactory;
 import net.praqma.tracey.protocol.eiffel.factories.EiffelSourceChangeCreatedEventFactory;
 import net.praqma.tracey.protocol.eiffel.models.Models;
@@ -102,19 +104,21 @@ public class EiffelArgumentParser {
         List<String> argList = Arrays.asList(args);
 
         if(argList.contains("EiffelArtifactCreatedEvent")) {
-            throw new UnsupportedOperationException("Not implemented yet!");
+            EiffelArtifactCreatedEventFactory artifactCreatedEventFactory = new EiffelArtifactCreatedEventFactory(NAME, URI, ns.getString("domainId"));
+            artifactCreatedEventFactory.setBuildCommand(ns.getString("cmd"));
+            extractLinks(ns, artifactCreatedEventFactory);
+            if(ns.getString("pom") != null) {
+                artifactCreatedEventFactory.parseFromPom(ns.getString("pom"));
+            } else {
+                artifactCreatedEventFactory.setGav(ns.getString("gid"), ns.getString("aid"), ns.getString("vid"));
+            }
+
+            return (GeneratedMessage) artifactCreatedEventFactory.create().build();
+
         } else if(argList.contains("EiffelCompositionDefinedEvent")) {
             EiffelCompositionDefinedEventFactory compositionDefinedEventFactory = new EiffelCompositionDefinedEventFactory(NAME, URI, ns.getString("domainId"));
             compositionDefinedEventFactory.setName(ns.getString("name"));
-            if(ns.getList("links") != null) {
-                ns.getList("links").stream().forEach((link) -> {
-                    String linkString = (String)link;
-                    String type = linkString.split(":")[0];
-                    String uuid = linkString.split(":")[1];
-                    Link l = Models.Link.newBuilder().setType(Models.Link.LinkType.valueOf(type.toUpperCase())).setId(uuid).build();
-                    compositionDefinedEventFactory.addLink(l);
-                });
-            }
+            extractLinks(ns, compositionDefinedEventFactory);
             return (GeneratedMessage) compositionDefinedEventFactory.create().build();
         } else if(argList.contains("EiffelSourceChangeCreatedEvent")) {
             EiffelSourceChangeCreatedEventFactory sourceChangeCreatedEventFactory = new EiffelSourceChangeCreatedEventFactory(NAME, URI, ns.getString("domainId"));
@@ -140,6 +144,18 @@ public class EiffelArgumentParser {
             }
         } else {
             throw new IllegalArgumentException("Illegal factory chosen");
+        }
+    }
+
+    private void extractLinks(Namespace ns, BaseFactory compositionDefinedEventFactory) {
+        if(ns.getList("links") != null) {
+            ns.getList("links").stream().forEach((link) -> {
+                String linkString = (String)link;
+                String type = linkString.split(":")[0];
+                String uuid = linkString.split(":")[1];
+                Link l = Models.Link.newBuilder().setType(Models.Link.LinkType.valueOf(type.toUpperCase())).setId(uuid).build();
+                compositionDefinedEventFactory.addLink(l);
+            });
         }
     }
 

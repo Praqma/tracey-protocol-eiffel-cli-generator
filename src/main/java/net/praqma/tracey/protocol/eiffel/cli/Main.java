@@ -5,33 +5,20 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
-import net.praqma.tracey.protocol.eiffel.factories.EiffelSourceChangeCreatedEventFactory;
-import net.praqma.tracey.protocol.eiffel.models.Models.Link;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import com.google.protobuf.util.JsonFormat;
 import java.util.regex.Pattern;
-import net.praqma.tracey.protocol.eiffel.factories.EiffelCompositionDefinedEventFactory;
-import net.praqma.utils.parsers.cmg.api.CommitMessageParser;
 import net.sourceforge.argparse4j.inf.*;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
 public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
-
-
 
     // Pattern to match syntax for link adding
     private static final Pattern LINKS = Pattern.compile("(CAUSE|PREVIOUS_VERSION):([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})",
