@@ -15,10 +15,7 @@ public class EiffelSourceChangeCreatedParser {
     private static final Logger LOG = Logger.getLogger(EiffelSourceChangeCreatedParser.class.getName());
     public static final List<String> SUPPORTEDPARSERS = Arrays.asList("GitHub", "Jira");
 
-    private final Subparser parser;
-
     public EiffelSourceChangeCreatedParser(final Subparser parser) {
-        this.parser = parser;
         parser.addArgument("-t", "--tracker")
                 .dest("tracker")
                 .help("Type of issue tracking system to use when generation URL for issues parsed from the commit message. Assuming GitHub if not set.")

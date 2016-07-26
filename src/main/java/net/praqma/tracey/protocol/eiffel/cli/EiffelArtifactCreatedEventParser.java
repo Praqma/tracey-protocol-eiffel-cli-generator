@@ -11,5 +11,6 @@ public class EiffelArtifactCreatedEventParser {
         parser.addArgument("-a", "--artifact-id").dest("aid");
         parser.addArgument("-w", "--version").dest("vid");
         parser.addArgument("-g", "--group-id").dest("gid");
+        parser.addArgument("-l", "--links").dest("links").nargs("*");
     }
 }

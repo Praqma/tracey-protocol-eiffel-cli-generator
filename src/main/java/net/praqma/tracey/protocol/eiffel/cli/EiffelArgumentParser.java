@@ -33,10 +33,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-/**
- *
- * @author Mads
- */
 public class EiffelArgumentParser {
     private static final Logger LOG = Logger.getLogger(EiffelArgumentParser.class.getName());
 
@@ -83,13 +79,15 @@ public class EiffelArgumentParser {
     }
 
     /**
-     * TODO: This should be better
+     * TODO: Not very flexible ATM.
      */
     public void registerAllParsers() {
         EiffelArtifactCreatedEventParser artifacts = new EiffelArtifactCreatedEventParser(getSubParsers().addParser("EiffelArtifactCreatedEvent"));
         parsers.put(artifacts.getClass(), artifacts);
-        EiffelSourceChangeCreatedParser soucechange = new EiffelSourceChangeCreatedParser(getSubParsers().addParser("EiffelSourceChangeCreatedEvent"));
-        parsers.put(soucechange.getClass(), soucechange);
+
+        EiffelSourceChangeCreatedParser sourcechange = new EiffelSourceChangeCreatedParser(getSubParsers().addParser("EiffelSourceChangeCreatedEvent"));
+        parsers.put(sourcechange.getClass(), sourcechange);
+
         EiffelCompositionDefinedEventParser composition = new EiffelCompositionDefinedEventParser(getSubParsers().addParser("EiffelCompositionDefinedEvent"));
         parsers.put(composition.getClass(), composition);
     }
