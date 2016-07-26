@@ -50,4 +50,5 @@ public class EiffelSourceChangeCreatedParser {
             LOG.warn("Tracker type " + parser + " not supported. Supported types are " + SUPPORTEDPARSERS.toString());
         return SUPPORTEDPARSERS.contains(parser);
     }
+
 }
