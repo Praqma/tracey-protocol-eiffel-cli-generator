@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.praqma.tracey.protocol.eiffel;
 
 import net.praqma.tracey.protocol.eiffel.cli.EiffelArgumentParser;
@@ -29,6 +24,14 @@ public class ParseEiffelCompositionDefinedEventTest {
        EiffelCompositionDefinedEvent msg = (EiffelCompositionDefinedEvent)eap.creteEvent(args);
        assertEquals("Composition name", msg.getData().getName());
        assertThat(msg.getLinksList(), hasItems(l1, l2));
+    }
+
+    @Test
+    public void testHelp() {
+        String[] args = new String[] { "EiffelCompositionDefinedEvent", "-h"};
+        EiffelArgumentParser eap = new EiffelArgumentParser();
+        eap.registerAllParsers();
+        assertNotNull(eap.parseArgs(args));
     }
 
 }

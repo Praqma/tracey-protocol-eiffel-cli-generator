@@ -7,8 +7,6 @@ package net.praqma.tracey.protocol.eiffel.cli;
 
 import com.google.protobuf.GeneratedMessage;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -31,8 +29,6 @@ import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparsers;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class EiffelArgumentParser {
@@ -47,9 +43,6 @@ public class EiffelArgumentParser {
     public HashMap<Class, Object> parsers = new HashMap<>();
 
     public EiffelArgumentParser() {
-        // To avoid log4j printouts when the program starts
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.WARN);
 
         // TODO: move CLI arguments to a separate class
         main = ArgumentParsers.newArgumentParser("generator")
@@ -57,7 +50,7 @@ public class EiffelArgumentParser {
                 .description("Generate Eiffel messages");
         // Add global options
         main.addArgument("-f", "--file").dest("file").help("Path to the file to save generated message");
-        main.addArgument("-d", "--debug").dest("debug").action(Arguments.storeTrue()).setDefault(false).help("Output debug logs");
+        main.addArgument("-d", "--debug").action(Arguments.storeTrue()).help("Output debug logs");
         main.addArgument("-i", "--domainId").dest("domainId").help("DomainId to use in the message").setDefault("");
         this.subParsers = main.addSubparsers();
     }
@@ -68,7 +61,7 @@ public class EiffelArgumentParser {
             return ns;
         } catch (ArgumentParserException ex) {
             main.handleError(ex);
-            ex.printStackTrace(System.out);
+            ex.printStackTrace(System.err);
         }
         return null;
     }
@@ -84,13 +77,13 @@ public class EiffelArgumentParser {
      * TODO: Not very flexible ATM.
      */
     public void registerAllParsers() {
-        EiffelArtifactCreatedEventParser artifacts = new EiffelArtifactCreatedEventParser(getSubParsers().addParser("EiffelArtifactCreatedEvent"));
+        EiffelArtifactCreatedEventParser artifacts = new EiffelArtifactCreatedEventParser(getSubParsers().addParser("EiffelArtifactCreatedEvent").defaultHelp(true));
         parsers.put(artifacts.getClass(), artifacts);
 
-        EiffelSourceChangeCreatedParser sourcechange = new EiffelSourceChangeCreatedParser(getSubParsers().addParser("EiffelSourceChangeCreatedEvent"));
+        EiffelSourceChangeCreatedParser sourcechange = new EiffelSourceChangeCreatedParser(getSubParsers().addParser("EiffelSourceChangeCreatedEvent").defaultHelp(true));
         parsers.put(sourcechange.getClass(), sourcechange);
 
-        EiffelCompositionDefinedEventParser composition = new EiffelCompositionDefinedEventParser(getSubParsers().addParser("EiffelCompositionDefinedEvent"));
+        EiffelCompositionDefinedEventParser composition = new EiffelCompositionDefinedEventParser(getSubParsers().addParser("EiffelCompositionDefinedEvent").defaultHelp(true));
         parsers.put(composition.getClass(), composition);
     }
 

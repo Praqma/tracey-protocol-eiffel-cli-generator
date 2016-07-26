@@ -4,6 +4,7 @@ import com.google.protobuf.util.JsonFormat;
 import net.praqma.tracey.protocol.eiffel.cli.EiffelArgumentParser;
 import net.praqma.tracey.protocol.eiffel.events.EiffelArtifactCreatedEventOuterClass.EiffelArtifactCreatedEvent;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 /**
@@ -28,5 +29,13 @@ public class ParseEiffelArtifactCreatedEventsTest {
         assertEquals("artifact-group", msg.getData().getGav().getGroupId());
         assertEquals(1, msg.getLinksCount());
         System.out.println(JsonFormat.printer().print(msg));
+    }
+
+    @Test
+    public void testHelp() {
+        String[] args = new String[] { "EiffelArtifactCreatedEvent", "-h"};
+        EiffelArgumentParser eap = new EiffelArgumentParser();
+        eap.registerAllParsers();
+        assertNotNull(eap.parseArgs(args));
     }
 }

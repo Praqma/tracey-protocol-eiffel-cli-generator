@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import com.google.protobuf.util.JsonFormat;
 import java.util.regex.Pattern;
 import net.sourceforge.argparse4j.inf.*;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -24,11 +25,14 @@ public class Main {
     private static final Pattern LINKS = Pattern.compile("(CAUSE|PREVIOUS_VERSION):([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})",
             Pattern.CASE_INSENSITIVE);
 
-
     public static void main (String[] args) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        // To avoid log4j printouts when the program starts
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.WARN);
 
         EiffelArgumentParser eap = new EiffelArgumentParser();
         eap.registerAllParsers();
+
         Namespace ns = eap.parseArgs(args);
 
         Logger rootLog = Logger.getLogger("");
@@ -38,11 +42,13 @@ public class Main {
             rootLog.setLevel( Level.WARN );
         }
 
+
         GeneratedMessage event = null;
         try {
             event = eap.creteEvent(args);
         } catch (Exception ex) {
             LOG.warn("Unable to create event", ex);
+            ex.printStackTrace(System.out);
             System.exit(1);
         }
 

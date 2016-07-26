@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.praqma.tracey.protocol.eiffel.cli;
 
 import java.util.Arrays;
@@ -13,7 +8,7 @@ import org.apache.log4j.Logger;
 public class EiffelSourceChangeCreatedParser {
 
     private static final Logger LOG = Logger.getLogger(EiffelSourceChangeCreatedParser.class.getName());
-    public static final List<String> SUPPORTEDPARSERS = Arrays.asList("GitHub", "Jira");
+    private static final List<String> SUPPORTEDPARSERS = Arrays.asList("GitHub", "Jira");
 
     public EiffelSourceChangeCreatedParser(final Subparser parser) {
         parser.addArgument("-t", "--tracker")
