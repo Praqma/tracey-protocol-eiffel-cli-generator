@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 
 import com.google.protobuf.util.JsonFormat;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import net.sourceforge.argparse4j.inf.*;
 import org.apache.log4j.BasicConfigurator;
@@ -35,24 +36,31 @@ public class Main {
 
         Namespace ns = eap.parseArgs(args);
 
+        // Wierd behaviour. An exception is thrown when -h or --help is provided.
+        if(ns == null && args != null && (Arrays.asList(args).contains("-h") || Arrays.asList(args).contains("--help"))) {
+            System.exit(1);
+        } else {
+            LOG.warn("Error while parsing arguments!");
+            System.exit(1);
+        }
+
         Logger rootLog = Logger.getLogger("");
-        if (ns.getBoolean("debug") == true) {
+        if (ns != null && ns.getBoolean("debug") == true) {
             rootLog.setLevel( Level.DEBUG );
         } else {
             rootLog.setLevel( Level.WARN );
         }
 
-
         GeneratedMessage event = null;
         try {
-            event = eap.creteEvent(args);
+            event = eap.createEvent(args);
         } catch (Exception ex) {
             LOG.warn("Unable to create event", ex);
             ex.printStackTrace(System.out);
             System.exit(1);
         }
 
-        if (ns.getString("file") != null) {
+        if (ns != null && ns.getString("file") != null) {
             File f = new File(ns.getString("file"));
 
             if(f.exists() && f.delete()) {

@@ -3,8 +3,8 @@ package net.praqma.tracey.protocol.eiffel;
 import net.praqma.tracey.protocol.eiffel.cli.EiffelArgumentParser;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class ParseEiffelSourceChangeCreatedEventTest {
 
@@ -13,15 +13,8 @@ public class ParseEiffelSourceChangeCreatedEventTest {
         String[] args = new String[] {"-i","mydomain.com", "EiffelSourceChangeCreatedEvent", "-p", "Praqma/Project"};
         EiffelArgumentParser argparser = new EiffelArgumentParser();
         argparser.registerAllParsers();
-        EiffelSourceChangeCreatedEvent msg = (EiffelSourceChangeCreatedEvent)argparser.creteEvent(args);
+        EiffelSourceChangeCreatedEvent msg = (EiffelSourceChangeCreatedEvent)argparser.createEvent(args);
         assertEquals("mydomain.com", msg.getMeta().getSource().getDomainId());
     }
 
-    @Test
-    public void testHelp() {
-        String[] args = new String[] { "EiffelCompositionDefinedEvent", "-h"};
-        EiffelArgumentParser eap = new EiffelArgumentParser();
-        eap.registerAllParsers();
-        assertNotNull(eap.parseArgs(args));
-    }
 }

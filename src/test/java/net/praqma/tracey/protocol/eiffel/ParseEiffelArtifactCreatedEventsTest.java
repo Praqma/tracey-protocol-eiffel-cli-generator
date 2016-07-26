@@ -4,13 +4,9 @@ import com.google.protobuf.util.JsonFormat;
 import net.praqma.tracey.protocol.eiffel.cli.EiffelArgumentParser;
 import net.praqma.tracey.protocol.eiffel.events.EiffelArtifactCreatedEventOuterClass.EiffelArtifactCreatedEvent;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-/**
- *
- * @author Mads
- */
 public class ParseEiffelArtifactCreatedEventsTest {
 
     @Test
@@ -20,22 +16,14 @@ public class ParseEiffelArtifactCreatedEventsTest {
             "-c", "mvn clean package",
             "-a", "artifact-one",
             "-w", "1.0",
-            "-g", "artifact-group",};
+            "-g", "artifact-group"};
         EiffelArgumentParser eap = new EiffelArgumentParser();
         eap.registerAllParsers();
-        EiffelArtifactCreatedEvent msg = (EiffelArtifactCreatedEvent)eap.creteEvent(args);
+        EiffelArtifactCreatedEvent msg = (EiffelArtifactCreatedEvent)eap.createEvent(args);
         assertEquals("artifact-one", msg.getData().getGav().getArtifactId());
         assertEquals("1.0", msg.getData().getGav().getVersion());
         assertEquals("artifact-group", msg.getData().getGav().getGroupId());
         assertEquals(1, msg.getLinksCount());
         System.out.println(JsonFormat.printer().print(msg));
-    }
-
-    @Test
-    public void testHelp() {
-        String[] args = new String[] { "EiffelArtifactCreatedEvent", "-h"};
-        EiffelArgumentParser eap = new EiffelArgumentParser();
-        eap.registerAllParsers();
-        assertNotNull(eap.parseArgs(args));
     }
 }

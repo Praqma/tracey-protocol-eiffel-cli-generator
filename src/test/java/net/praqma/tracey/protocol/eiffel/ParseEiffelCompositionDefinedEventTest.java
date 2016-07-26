@@ -9,6 +9,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import static org.junit.matchers.JUnitMatchers.hasItems;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 
 public class ParseEiffelCompositionDefinedEventTest {
 
@@ -21,17 +25,9 @@ public class ParseEiffelCompositionDefinedEventTest {
        eap.registerAllParsers();
        Namespace ns = eap.parseArgs(args);
        assertNotNull(ns.getList("links"));
-       EiffelCompositionDefinedEvent msg = (EiffelCompositionDefinedEvent)eap.creteEvent(args);
+       EiffelCompositionDefinedEvent msg = (EiffelCompositionDefinedEvent)eap.createEvent(args);
        assertEquals("Composition name", msg.getData().getName());
        assertThat(msg.getLinksList(), hasItems(l1, l2));
-    }
-
-    @Test
-    public void testHelp() {
-        String[] args = new String[] { "EiffelCompositionDefinedEvent", "-h"};
-        EiffelArgumentParser eap = new EiffelArgumentParser();
-        eap.registerAllParsers();
-        assertNotNull(eap.parseArgs(args));
     }
 
 }

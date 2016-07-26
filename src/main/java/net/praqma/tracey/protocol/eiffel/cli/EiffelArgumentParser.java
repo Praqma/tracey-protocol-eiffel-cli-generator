@@ -50,7 +50,7 @@ public class EiffelArgumentParser {
                 .description("Generate Eiffel messages");
         // Add global options
         main.addArgument("-f", "--file").dest("file").help("Path to the file to save generated message");
-        main.addArgument("-d", "--debug").action(Arguments.storeTrue()).help("Output debug logs");
+        main.addArgument("-d", "--debug").dest("debug").action(Arguments.storeTrue()).help("Output debug logs");
         main.addArgument("-i", "--domainId").dest("domainId").help("DomainId to use in the message").setDefault("");
         this.subParsers = main.addSubparsers();
     }
@@ -61,7 +61,6 @@ public class EiffelArgumentParser {
             return ns;
         } catch (ArgumentParserException ex) {
             main.handleError(ex);
-            ex.printStackTrace(System.err);
         }
         return null;
     }
@@ -92,7 +91,7 @@ public class EiffelArgumentParser {
     }
 
     //TODO: Move these to seperate class
-    public GeneratedMessage creteEvent(String[] args) throws Exception {
+    public GeneratedMessage createEvent(String[] args) throws Exception {
         Namespace ns = parseArgs(args);
         List<String> argList = Arrays.asList(args);
 
