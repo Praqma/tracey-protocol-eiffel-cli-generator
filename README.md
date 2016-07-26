@@ -11,7 +11,9 @@ Supported messages:
 
 * EiffelSourceChangeCreatedEvent (message will be generated from the current commit, more options to come)
 
-Example command: `EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffel-cli-generator -c HEAD~1`
+**Example command:** `EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffel-cli-generator -c HEAD~1`
+
+**Output:** 
 
 ```
 {
@@ -65,9 +67,9 @@ Example command: `EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffe
 
 * EiffelCompositionDefinedEvent
 
-Example command: `tracey-protocol-eiffel-cli-generator.jar EiffelCompositionDefinedEvent -n Composition_A -l CAUSE:8a718a03-f473-4e61-9bae-e986885fee18`
+**Example command:** `tracey-protocol-eiffel-cli-generator.jar EiffelCompositionDefinedEvent -n Composition_A -l CAUSE:8a718a03-f473-4e61-9bae-e986885fee18`
 
-Output: 
+**Output:** 
 
 ```
 {
