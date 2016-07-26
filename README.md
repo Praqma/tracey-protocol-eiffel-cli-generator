@@ -11,10 +11,10 @@ Supported messages:
 
 * EiffelSourceChangeCreatedEvent (message will be generated from the current commit, more options to come)
 
+Example command: `EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffel-cli-generator -c HEAD~1`
+
 ```
-$ ./gradlew build
-$ java -jar build/libs/tracey-protocol-eiffel-cli-generator.jar EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffel-cli-generator -c HEAD~1
-0 [main] WARN net.praqma.tracey.protocol.eiffel.cli.Main  - {
+{
   "meta": {
     "id": "f8a8bca7-cbc1-4f4a-904a-226acbd66208",
     "type": "EiffelSourceChangeCreatedEvent",
@@ -62,3 +62,37 @@ $ java -jar build/libs/tracey-protocol-eiffel-cli-generator.jar EiffelSourceChan
   }
 }
 ```
+
+* EiffelCompositionDefinedEvent
+
+Example command: `tracey-protocol-eiffel-cli-generator.jar EiffelCompositionDefinedEvent -n Composition_A -l CAUSE:8a718a03-f473-4e61-9bae-e986885fee18`
+
+Output: 
+
+```
+{
+  "meta": {
+    "id": "d2f20d54-5a8e-4a69-a7d1-5a11b6d89bf2",
+    "type": "EiffelCompositionDefinedEvent",
+    "time": "1469533752898",
+    "source": {
+      "host": "mads-notebook",
+      "name": "Eiffel command line generator",
+      "uri": "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator",
+      "serializer": {
+        "groupId": "net.praqma.tracey.protocol.eiffel.cli",
+        "artifactId": "tracey-protocol-eiffel-cli-generator",
+        "version": "drop1-19-gdd2bbde"
+      }
+    }
+  },
+  "links": [{
+    "type": "CAUSE",
+    "id": "8a718a03-f473-4e61-9bae-e986885fee18"
+  }],
+  "data": {
+    "name": "Compsition_A"
+  }
+}
+```
+
