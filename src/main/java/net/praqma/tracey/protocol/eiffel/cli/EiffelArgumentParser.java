@@ -14,11 +14,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import net.praqma.tracey.protocol.eiffel.events.EiffelConfidenceLevelModifiedEventOuterClass;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
 import net.praqma.tracey.protocol.eiffel.factories.BaseFactory;
 import net.praqma.tracey.protocol.eiffel.factories.EiffelArtifactCreatedEventFactory;
 import net.praqma.tracey.protocol.eiffel.factories.EiffelCompositionDefinedEventFactory;
+import net.praqma.tracey.protocol.eiffel.factories.EiffelConfidenceLevelModifiedEventFactory;
 import net.praqma.tracey.protocol.eiffel.factories.EiffelSourceChangeCreatedEventFactory;
 import net.praqma.tracey.protocol.eiffel.models.Models;
 import net.praqma.tracey.protocol.eiffel.models.Models.Link;
@@ -33,7 +36,8 @@ import org.apache.log4j.Logger;
 
 public class EiffelArgumentParser {
     private static final Logger LOG = Logger.getLogger(EiffelArgumentParser.class.getName());
-
+    private static final Pattern LINKS = Pattern.compile("(CAUSE|PREVIOUS_VERSION):([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})",
+            Pattern.CASE_INSENSITIVE);
 
     private static final String NAME = "Eiffel command line generator";
     private static final String URI = "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator";
@@ -79,6 +83,9 @@ public class EiffelArgumentParser {
 
         EiffelCompositionDefinedEventParser composition = new EiffelCompositionDefinedEventParser(getSubParsers().addParser("EiffelCompositionDefinedEvent").defaultHelp(true));
         parsers.put(composition.getClass(), composition);
+
+        EiffelConfidenceLevelModifiedEventParser confidence = new EiffelConfidenceLevelModifiedEventParser(getSubParsers().addParser("EiffelConfidenceLevelModifiedEvent").defaultHelp(true));
+        parsers.put(confidence.getClass(), confidence);
     }
 
     public <T> T getParser(Class<T> t) {
@@ -129,19 +136,30 @@ public class EiffelArgumentParser {
             } else {
                 throw new IllegalArgumentException(String.format("Illegal issue tracker chosen:%s", ns.get("tracer")));
             }
+        } else if(argList.contains("EiffelConfidenceLevelModifiedEvent")) {
+            EiffelConfidenceLevelModifiedEventFactory fac = new EiffelConfidenceLevelModifiedEventFactory(NAME, URI, ns.getString("domainId"));
+            extractLinks(ns, fac);
+            fac.setIssuier(ns.getString("iName"), ns.getString("iEmail"));
+            fac.setName(ns.getString("name"));
+            fac.setValue(EiffelConfidenceLevelModifiedEventOuterClass.EiffelConfidenceLevelModifiedEvent.EiffelConfidenceLevelType.valueOf(ns.getString("value")));
+            return (GeneratedMessage)fac.create().build();
         } else {
             throw new IllegalArgumentException("Illegal factory chosen");
         }
     }
 
-    private void extractLinks(Namespace ns, BaseFactory compositionDefinedEventFactory) {
+    private void extractLinks(Namespace ns, BaseFactory factory) {
         if(ns.getList("links") != null) {
             ns.getList("links").stream().forEach((link) -> {
                 String linkString = (String)link;
                 String type = linkString.split(":")[0];
                 String uuid = linkString.split(":")[1];
-                Link l = Models.Link.newBuilder().setType(Models.Link.LinkType.valueOf(type.toUpperCase())).setId(uuid).build();
-                compositionDefinedEventFactory.addLink(l);
+                if(!LINKS.matcher(linkString).matches()) {
+                    LOG.warn(String.format("Ignoring link %s Reason: Incorrect syntax must be of the format: %s", linkString, LINKS.toString() ));
+                } else {
+                    Link l = Models.Link.newBuilder().setType(Models.Link.LinkType.valueOf(type.toUpperCase())).setId(uuid).build();
+                    factory.addLink(l);
+                }
             });
         }
     }

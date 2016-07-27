@@ -12,7 +12,6 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 
 import com.google.protobuf.util.JsonFormat;
-import java.util.regex.Pattern;
 import net.sourceforge.argparse4j.inf.*;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
 import org.apache.log4j.BasicConfigurator;
@@ -21,10 +20,6 @@ import org.apache.log4j.Level;
 
 public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class.getName());
-
-    // Pattern to match syntax for link adding
-    private static final Pattern LINKS = Pattern.compile("(CAUSE|PREVIOUS_VERSION):([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})",
-            Pattern.CASE_INSENSITIVE);
 
     public static void main (String[] args) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         // To avoid log4j printouts when the program starts
@@ -64,7 +59,7 @@ public class Main {
             File f = new File(ns.getString("file"));
 
             if(f.exists() && f.delete()) {
-                LOG.warn("Couldn't remove " + f.toString() + ". Well, we will overwrite anyway if we can");
+                LOG.warn("Removed " + f.toString() + ". Well, we will overwrite anyway if we can");
             }
 
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(ns.getString("file")), "utf-8"))) {

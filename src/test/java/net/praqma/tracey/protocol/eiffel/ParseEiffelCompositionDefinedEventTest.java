@@ -9,11 +9,8 @@ import net.praqma.tracey.protocol.eiffel.events.EiffelCompositionDefinedEventOut
 import net.praqma.tracey.protocol.eiffel.models.Models.Link;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.not;
 import org.junit.Test;
-import static org.junit.matchers.JUnitMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -36,6 +33,23 @@ public class ParseEiffelCompositionDefinedEventTest {
         EiffelCompositionDefinedEvent msg = (EiffelCompositionDefinedEvent)eap.createEvent(args);
         assertEquals("Composition name", msg.getData().getName());
         assertThat(msg.getLinksList(), hasItems(l1, l2));
+    }
+
+    @Test
+    public void testCompositonEventCreateCommandWithIncorrectLink() throws Exception {
+        String[] args = new String[] {"EiffelCompositionDefinedEvent", "-l", "NOT_THERE:8a718a03-f473-4e61-9bae-e986885fee18", "CAUSE:8a718a03-f473-4e61-9bae-e986885fee18"};
+        EiffelArgumentParser eap = new EiffelArgumentParser();
+        eap.registerAllParsers();
+
+        Link l1 = Link.newBuilder().setId("8a718a03-f473-4e61-9bae-e986885fee18").setType(Link.LinkType.CAUSE).build();
+        Link l2 = Link.newBuilder().setId("8a718a03-f473-4e61-9bae-e986885fee18").setType(Link.LinkType.PREVIOUS_VERSION).build();
+
+        Namespace ns = eap.parseArgs(args);
+        assertNotNull(ns.getList("links"));
+        EiffelCompositionDefinedEvent msg = (EiffelCompositionDefinedEvent)eap.createEvent(args);
+        assertEquals("Composition name", msg.getData().getName());
+        assertThat(msg.getLinksList(), hasItems(l1));
+        assertThat(msg.getLinksList(), not(hasItems(l2)));
     }
 
     /**
