@@ -53,6 +53,11 @@ public class ParseEiffelArtifactCreatedEventsTest {
     public void testMain() throws Exception {
         String path = Paths.get(this.getClass().getResource("example-pom.xml").toURI()).toAbsolutePath().toString();
         File f = new File("testMain.out");
+
+        if(f.exists()) {
+            f.delete();
+        }
+        
         String fpath = f.getAbsolutePath();
 
         String[] args = new String[] {

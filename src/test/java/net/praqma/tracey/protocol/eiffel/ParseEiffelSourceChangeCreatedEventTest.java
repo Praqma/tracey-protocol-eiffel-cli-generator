@@ -24,6 +24,11 @@ public class ParseEiffelSourceChangeCreatedEventTest {
     @Test
     public void testMain() throws Exception {
         File f = new File("testMain_SourceChange.out");
+
+        if(f.exists()) {
+            f.delete();
+        }
+        
         String[] args = new String[] {
             "-f", f.getAbsolutePath(),
             "-i","mydomain.com",

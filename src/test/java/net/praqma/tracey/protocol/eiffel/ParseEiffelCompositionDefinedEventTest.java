@@ -62,6 +62,11 @@ public class ParseEiffelCompositionDefinedEventTest {
     @Test
     public void testMain() throws Exception {
         File f = new File("testMain_Compsition.out");
+
+        if(f.exists()) {
+            f.delete();
+        }
+        
         String[] args = new String[] {
            "-f", f.getAbsolutePath(),
            "EiffelCompositionDefinedEvent",

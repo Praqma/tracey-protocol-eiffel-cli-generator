@@ -76,6 +76,11 @@ public class ParseEiffelConfidenceLevelChangedEventTest {
     @Test
     public void testMain() throws Exception {
         File f = new File("testMain_ConfidenceLevel");
+
+        if(f.exists()) {
+            f.delete();
+        }
+
         String[] args = new String[] {
                 "-f", f.getAbsolutePath(),
                 "EiffelConfidenceLevelModifiedEvent",
