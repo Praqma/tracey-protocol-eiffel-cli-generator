@@ -1,9 +1,14 @@
 package net.praqma.tracey.protocol.eiffel;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import net.praqma.tracey.protocol.eiffel.cli.EiffelArgumentParser;
+import net.praqma.tracey.protocol.eiffel.cli.Main;
 import net.praqma.tracey.protocol.eiffel.events.EiffelCompositionDefinedEventOuterClass.EiffelCompositionDefinedEvent;
 import net.praqma.tracey.protocol.eiffel.models.Models.Link;
 import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.internal.HelpScreenException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -12,22 +17,55 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
 public class ParseEiffelCompositionDefinedEventTest {
 
     @Test
     public void testCompositonEventCreateCommand() throws Exception {
-       String[] args = new String[] {"EiffelCompositionDefinedEvent", "-l", "PREVIOUS_VERSION:8a718a03-f473-4e61-9bae-e986885fee18", "CAUSE:8a718a03-f473-4e61-9bae-e986885fee18"};
-       EiffelArgumentParser eap = new EiffelArgumentParser();
-       Link l1 = Link.newBuilder().setId("8a718a03-f473-4e61-9bae-e986885fee18").setType(Link.LinkType.CAUSE).build();
-       Link l2 = Link.newBuilder().setId("8a718a03-f473-4e61-9bae-e986885fee18").setType(Link.LinkType.PREVIOUS_VERSION).build();
-       eap.registerAllParsers();
-       Namespace ns = eap.parseArgs(args);
-       assertNotNull(ns.getList("links"));
-       EiffelCompositionDefinedEvent msg = (EiffelCompositionDefinedEvent)eap.createEvent(args);
-       assertEquals("Composition name", msg.getData().getName());
-       assertThat(msg.getLinksList(), hasItems(l1, l2));
+        String[] args = new String[] {"EiffelCompositionDefinedEvent", "-l", "PREVIOUS_VERSION:8a718a03-f473-4e61-9bae-e986885fee18", "CAUSE:8a718a03-f473-4e61-9bae-e986885fee18"};
+        EiffelArgumentParser eap = new EiffelArgumentParser();
+        eap.registerAllParsers();
+
+        Link l1 = Link.newBuilder().setId("8a718a03-f473-4e61-9bae-e986885fee18").setType(Link.LinkType.CAUSE).build();
+        Link l2 = Link.newBuilder().setId("8a718a03-f473-4e61-9bae-e986885fee18").setType(Link.LinkType.PREVIOUS_VERSION).build();
+
+        Namespace ns = eap.parseArgs(args);
+        assertNotNull(ns.getList("links"));
+        EiffelCompositionDefinedEvent msg = (EiffelCompositionDefinedEvent)eap.createEvent(args);
+        assertEquals("Composition name", msg.getData().getName());
+        assertThat(msg.getLinksList(), hasItems(l1, l2));
+    }
+
+    /**
+     * Use case: We want to test the main interface of the CLI when used in our .jar,
+     * that is invoking it using the main method of the main class.
+     *
+     *
+     * @throws Exception when the test fails.
+     */
+    @Test
+    public void testMain() throws Exception {
+        File f = new File("testMain_Compsition.out");
+        String[] args = new String[] {
+           "-f", f.getAbsolutePath(),
+           "EiffelCompositionDefinedEvent",
+           "-l", "PREVIOUS_VERSION:8a718a03-f473-4e61-9bae-e986885fee18", "CAUSE:8a718a03-f473-4e61-9bae-e986885fee18"};
+        EiffelArgumentParser eap = new EiffelArgumentParser();
+        eap.registerAllParsers();
+        Main.main(args);
+        assertTrue(f.exists());
+        String contents =  new String(Files.readAllBytes(Paths.get(f.getAbsolutePath())),"UTF-8");
+        assertTrue(contents.contains("EiffelCompositionDefinedEvent"));
+    }
+
+    @Test(expected = HelpScreenException.class)
+    public void helpScreen() throws Exception {
+        String[] args = new String[] { "EiffelCompositionDefinedEvent", "-h" };
+        EiffelArgumentParser eap = new EiffelArgumentParser();
+        eap.registerAllParsers();
+        eap.parseArgs(args);
     }
 
 }

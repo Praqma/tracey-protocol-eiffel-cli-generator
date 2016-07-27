@@ -55,14 +55,9 @@ public class EiffelArgumentParser {
         this.subParsers = main.addSubparsers();
     }
 
-    public Namespace parseArgs(String[] args) {
-        try {
-            Namespace ns = main.parseArgs(args);
-            return ns;
-        } catch (ArgumentParserException ex) {
-            main.handleError(ex);
-        }
-        return null;
+    public Namespace parseArgs(String[] args) throws ArgumentParserException {
+        Namespace ns = main.parseArgs(args);
+        return ns;
     }
 
     /**

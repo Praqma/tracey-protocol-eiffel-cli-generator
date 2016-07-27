@@ -12,9 +12,9 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 
 import com.google.protobuf.util.JsonFormat;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 import net.sourceforge.argparse4j.inf.*;
+import net.sourceforge.argparse4j.internal.HelpScreenException;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
@@ -33,15 +33,15 @@ public class Main {
 
         EiffelArgumentParser eap = new EiffelArgumentParser();
         eap.registerAllParsers();
-
-        Namespace ns = eap.parseArgs(args);
-
-        // Wierd behaviour. An exception is thrown when -h or --help is provided.
-        if(ns == null && args != null && (Arrays.asList(args).contains("-h") || Arrays.asList(args).contains("--help"))) {
-            System.exit(1);
-        } else {
-            LOG.warn("Error while parsing arguments!");
-            System.exit(1);
+        Namespace ns = null;
+        try {
+            ns = eap.parseArgs(args);
+        } catch (HelpScreenException hse) {
+            // Special case with the help.
+            return;
+        } catch (ArgumentParserException ex) {
+            LOG.warn("Failed to parse arguments", ex);
+            System.exit(3);
         }
 
         Logger rootLog = Logger.getLogger("");
