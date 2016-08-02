@@ -1,6 +1,7 @@
 package net.praqma.tracey.protocol.eiffel;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import net.praqma.tracey.protocol.eiffel.cli.EiffelArgumentParser;
@@ -10,6 +11,8 @@ import net.praqma.tracey.protocol.eiffel.models.Models.Link;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
 import static org.hamcrest.CoreMatchers.not;
+
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -18,6 +21,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
 public class ParseEiffelCompositionDefinedEventTest {
+
+    private final File testFile = new File("testMain_Compsition.json");
 
     @Test
     public void testCompositonEventCreateCommand() throws Exception {
@@ -61,21 +66,15 @@ public class ParseEiffelCompositionDefinedEventTest {
      */
     @Test
     public void testMain() throws Exception {
-        File f = new File("testMain_Compsition.out");
-
-        if(f.exists()) {
-            f.delete();
-        }
-        
         String[] args = new String[] {
-           "-f", f.getAbsolutePath(),
+           "-f", testFile.getAbsolutePath(),
            "EiffelCompositionDefinedEvent",
            "-l", "PREVIOUS_VERSION:8a718a03-f473-4e61-9bae-e986885fee18", "CAUSE:8a718a03-f473-4e61-9bae-e986885fee18"};
         EiffelArgumentParser eap = new EiffelArgumentParser();
         eap.registerAllParsers();
         Main.main(args);
-        assertTrue(f.exists());
-        String contents =  new String(Files.readAllBytes(Paths.get(f.getAbsolutePath())),"UTF-8");
+        assertTrue(testFile.exists());
+        String contents =  new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())),"UTF-8");
         assertTrue(contents.contains("EiffelCompositionDefinedEvent"));
     }
 
@@ -85,6 +84,13 @@ public class ParseEiffelCompositionDefinedEventTest {
         EiffelArgumentParser eap = new EiffelArgumentParser();
         eap.registerAllParsers();
         eap.parseArgs(args);
+    }
+
+    @After
+    public void doCleanup() throws Exception {
+        if(testFile.exists() && ! testFile.delete()) {
+            throw new IOException("Can't delete " + testFile.getAbsolutePath());
+        }
     }
 
 }

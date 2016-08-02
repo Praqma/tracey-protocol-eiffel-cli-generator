@@ -1,6 +1,7 @@
 package net.praqma.tracey.protocol.eiffel;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import net.praqma.tracey.protocol.eiffel.cli.EiffelArgumentParser;
@@ -9,9 +10,13 @@ import net.praqma.tracey.protocol.eiffel.events.EiffelConfidenceLevelModifiedEve
 import net.praqma.tracey.protocol.eiffel.events.EiffelConfidenceLevelModifiedEventOuterClass.EiffelConfidenceLevelModifiedEvent.EiffelConfidenceLevelType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.After;
 import org.junit.Test;
 
 public class ParseEiffelConfidenceLevelChangedEventTest {
+
+    private final File testFile = new File("testMain_ConfidenceLevel.json");
 
     @Test
     public void parseDefaultWithSuccess() throws Exception {
@@ -75,14 +80,8 @@ public class ParseEiffelConfidenceLevelChangedEventTest {
 
     @Test
     public void testMain() throws Exception {
-        File f = new File("testMain_ConfidenceLevel");
-
-        if(f.exists()) {
-            f.delete();
-        }
-
         String[] args = new String[] {
-                "-f", f.getAbsolutePath(),
+                "-f", testFile.getAbsolutePath(),
                 "EiffelConfidenceLevelModifiedEvent",
                 "-n", "Cofidence change. Tests for this product passed",
                 "-in", "John Doe",
@@ -90,8 +89,15 @@ public class ParseEiffelConfidenceLevelChangedEventTest {
                 "-v", "SUCCESS"
         };
         Main.main(args);
-        String contents =  new String(Files.readAllBytes(Paths.get(f.getAbsolutePath())),"UTF-8");
+        String contents =  new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())),"UTF-8");
         assertTrue(contents.contains("EiffelConfidenceLevelModifiedEvent"));
         assertTrue(contents.contains("SUCCESS"));
+    }
+
+    @After
+    public void doCleanup() throws Exception {
+        if(testFile.exists() && ! testFile.delete()) {
+            throw new IOException("Can't delete " + testFile.getAbsolutePath());
+        }
     }
 }

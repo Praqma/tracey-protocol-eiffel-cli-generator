@@ -2,17 +2,21 @@ package net.praqma.tracey.protocol.eiffel;
 
 import com.google.protobuf.util.JsonFormat;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import net.praqma.tracey.protocol.eiffel.cli.EiffelArgumentParser;
 import net.praqma.tracey.protocol.eiffel.cli.Main;
 import net.praqma.tracey.protocol.eiffel.events.EiffelArtifactCreatedEventOuterClass.EiffelArtifactCreatedEvent;
 import net.sourceforge.argparse4j.internal.HelpScreenException;
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ParseEiffelArtifactCreatedEventsTest {
+
+    private final File testFile = new File("testMain.json");
 
     @Test
     public void parseDefault() throws Exception {
@@ -52,13 +56,12 @@ public class ParseEiffelArtifactCreatedEventsTest {
     @Test
     public void testMain() throws Exception {
         String path = Paths.get(this.getClass().getResource("example-pom.xml").toURI()).toAbsolutePath().toString();
-        File f = new File("testMain.out");
 
-        if(f.exists()) {
-            f.delete();
+        if(testFile.exists() && ! testFile.delete()) {
+            throw new IOException("Can't delete " + testFile.toString());
         }
         
-        String fpath = f.getAbsolutePath();
+        String fpath = testFile.getAbsolutePath();
 
         String[] args = new String[] {
             "-f",fpath,
@@ -67,8 +70,8 @@ public class ParseEiffelArtifactCreatedEventsTest {
             "-m", path,
             "-c", "mvn clean package"};
         Main.main(args);
-        assertTrue(f.exists());
-        String contents =  new String(Files.readAllBytes(Paths.get(f.getAbsolutePath())),"UTF-8");
+        assertTrue(testFile.exists());
+        String contents =  new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())),"UTF-8");
         assertTrue(contents.contains("EiffelArtifactCreatedEvent"));
     }
 
@@ -78,5 +81,12 @@ public class ParseEiffelArtifactCreatedEventsTest {
         EiffelArgumentParser eap = new EiffelArgumentParser();
         eap.registerAllParsers();
         eap.parseArgs(args);
+    }
+
+    @After
+    public void doCleanup() throws Exception {
+        if(testFile.exists() && ! testFile.delete()) {
+            throw new IOException("Can't delete " + testFile.getAbsolutePath());
+        }
     }
 }
