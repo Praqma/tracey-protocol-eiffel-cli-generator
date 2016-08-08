@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class ParseEiffelConfidenceLevelChangedEventTest {
@@ -93,13 +92,6 @@ public class ParseEiffelConfidenceLevelChangedEventTest {
         String contents =  new String(Files.readAllBytes(Paths.get(testFile.getAbsolutePath())),"UTF-8");
         assertTrue(contents.contains("EiffelConfidenceLevelModifiedEvent"));
         assertTrue(contents.contains("SUCCESS"));
-    }
-
-    @Before
-    public void doPrepare() throws Exception {
-        if(testFile.exists() && !testFile.delete()) {
-            throw new IOException("Can't delete " + testFile.getAbsolutePath());
-        }
     }
 
     @After

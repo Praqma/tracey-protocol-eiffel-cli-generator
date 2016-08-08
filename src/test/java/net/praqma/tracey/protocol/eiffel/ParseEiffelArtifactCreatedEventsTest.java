@@ -14,7 +14,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
 
 public class ParseEiffelArtifactCreatedEventsTest {
 
@@ -111,16 +110,6 @@ public class ParseEiffelArtifactCreatedEventsTest {
         eap.registerAllParsers();
         eap.parseArgs(args);
     }
-
-    @Before
-    public void doPrepare() throws Exception {
-        synchronized(testFile) {
-            if(testFile.exists() && !testFile.delete()) {
-                throw new IOException("Can't delete " + testFile.getAbsolutePath());
-            }
-        }
-    }
-
 
     @After
     public void doCleanup() throws Exception {

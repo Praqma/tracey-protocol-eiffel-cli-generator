@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
 public class ParseEiffelCompositionDefinedEventTest {
@@ -85,13 +84,6 @@ public class ParseEiffelCompositionDefinedEventTest {
         EiffelArgumentParser eap = new EiffelArgumentParser();
         eap.registerAllParsers();
         eap.parseArgs(args);
-    }
-
-    @Before
-    public void doPrepare() throws Exception {
-        if(testFile.exists() && !testFile.delete()) {
-            throw new IOException("Can't delete " + testFile.getAbsolutePath());
-        }
     }
 
     @After
