@@ -69,7 +69,7 @@ public class ParseEiffelArtifactCreatedEventsTest {
         String[] args = new String[] {
             "-f",fpath,
             "EiffelArtifactCreatedEvent", "-l",
-            "CAUSE:8a718a03-f473-4e61-9bae-e986885fee18",
+            "CAUSE:ff718a03-f473-4e61-9bae-e986885fdd18",
             "-m", path};
 
         Main.main(args);
@@ -79,9 +79,8 @@ public class ParseEiffelArtifactCreatedEventsTest {
         assertTrue(contents.contains("EiffelArtifactCreatedEvent"));
         //Assert that the generated object does NOT contain the buildCommand (which is optional)
 
-        assertFalse(contents.contains("buildCommand"));
+        assertFalse("Should not contain 'buildCommand': "+contents, contents.contains("buildCommand"));
     }
-
 
     @Test
     public void testMain() throws Exception {
@@ -115,16 +114,20 @@ public class ParseEiffelArtifactCreatedEventsTest {
 
     @Before
     public void doPrepare() throws Exception {
-        if(testFile.exists() && !testFile.delete()) {
-            throw new IOException("Can't delete " + testFile.getAbsolutePath());
+        synchronized(testFile) {
+            if(testFile.exists() && !testFile.delete()) {
+                throw new IOException("Can't delete " + testFile.getAbsolutePath());
+            }
         }
     }
 
 
     @After
     public void doCleanup() throws Exception {
-        if(testFile.exists() && !testFile.delete()) {
-            throw new IOException("Can't delete " + testFile.getAbsolutePath());
+        synchronized(testFile) {
+            if(testFile.exists() && !testFile.delete()) {
+                throw new IOException("Can't delete " + testFile.getAbsolutePath());
+            }
         }
     }
 }
