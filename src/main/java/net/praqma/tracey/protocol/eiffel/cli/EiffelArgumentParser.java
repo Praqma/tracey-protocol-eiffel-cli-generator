@@ -99,7 +99,11 @@ public class EiffelArgumentParser {
 
         if(argList.contains("EiffelArtifactCreatedEvent")) {
             EiffelArtifactCreatedEventFactory artifactCreatedEventFactory = new EiffelArtifactCreatedEventFactory(NAME, URI, ns.getString("domainId"));
-            artifactCreatedEventFactory.setBuildCommand(ns.getString("cmd"));
+
+            //Build command is optional
+            if(ns.getString("cmd") != null)
+                artifactCreatedEventFactory.setBuildCommand(ns.getString("cmd"));
+            
             extractLinks(ns, artifactCreatedEventFactory);
             if(ns.getString("pom") != null) {
                 artifactCreatedEventFactory.parseFromPom(ns.getString("pom"));

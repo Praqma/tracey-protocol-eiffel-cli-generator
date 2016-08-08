@@ -12,7 +12,9 @@ import net.sourceforge.argparse4j.internal.HelpScreenException;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 
 public class ParseEiffelArtifactCreatedEventsTest {
 
@@ -54,13 +56,41 @@ public class ParseEiffelArtifactCreatedEventsTest {
     }
 
     @Test
+    public void testOptionalBuildCommandShouldSucceed() throws Exception {
+        String path = Paths.get(this.getClass().getResource("example-pom.xml").toURI()).toAbsolutePath().toString();
+
+
+        if(testFile.exists() && !testFile.delete()) {
+            throw new IOException("Can't delete " + testFile.toString());
+        }
+
+        String fpath = testFile.getAbsolutePath();
+
+        String[] args = new String[] {
+            "-f",fpath,
+            "EiffelArtifactCreatedEvent", "-l",
+            "CAUSE:8a718a03-f473-4e61-9bae-e986885fee18",
+            "-m", path};
+
+        Main.main(args);
+        assertTrue(testFile.exists());
+        String contents =  new String( Files.readAllBytes( Paths.get( testFile.getAbsolutePath()) ), "UTF-8" );
+
+        assertTrue(contents.contains("EiffelArtifactCreatedEvent"));
+        //Assert that the generated object does NOT contain the buildCommand (which is optional)
+
+        assertFalse(contents.contains("buildCommand"));
+    }
+
+
+    @Test
     public void testMain() throws Exception {
         String path = Paths.get(this.getClass().getResource("example-pom.xml").toURI()).toAbsolutePath().toString();
 
-        if(testFile.exists() && ! testFile.delete()) {
+        if(testFile.exists() && !testFile.delete()) {
             throw new IOException("Can't delete " + testFile.toString());
         }
-        
+
         String fpath = testFile.getAbsolutePath();
 
         String[] args = new String[] {
@@ -83,9 +113,17 @@ public class ParseEiffelArtifactCreatedEventsTest {
         eap.parseArgs(args);
     }
 
+    @Before
+    public void doPrepare() throws Exception {
+        if(testFile.exists() && !testFile.delete()) {
+            throw new IOException("Can't delete " + testFile.getAbsolutePath());
+        }
+    }
+
+
     @After
     public void doCleanup() throws Exception {
-        if(testFile.exists() && ! testFile.delete()) {
+        if(testFile.exists() && !testFile.delete()) {
             throw new IOException("Can't delete " + testFile.getAbsolutePath());
         }
     }
