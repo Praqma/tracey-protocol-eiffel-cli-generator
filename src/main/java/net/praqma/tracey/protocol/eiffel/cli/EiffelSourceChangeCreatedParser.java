@@ -36,8 +36,9 @@ public class EiffelSourceChangeCreatedParser {
                 .help("branch name to specify in the message - we can't guess branch automatically since commit might belong to multiple branches. Assuming master if not set")
                 .setDefault("master");
         parser.addArgument("-l", "--links")
+                .nargs("*")
                 .dest("links")
-                .help("Spicify links to add to this event");
+                .help("Links to attach to this event. Use form <TYPE>:<UUID>");
     }
 
     public boolean supports(String parser) {

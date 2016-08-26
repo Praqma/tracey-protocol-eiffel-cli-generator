@@ -9,11 +9,9 @@ import com.google.protobuf.GeneratedMessage;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Pattern;
 import net.praqma.tracey.protocol.eiffel.events.EiffelConfidenceLevelModifiedEventOuterClass;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
@@ -121,22 +119,15 @@ public class EiffelArgumentParser {
             return (GeneratedMessage) compositionDefinedEventFactory.create().build();
         } else if(argList.contains("EiffelSourceChangeCreatedEvent")) {
             EiffelSourceChangeCreatedEventFactory sourceChangeCreatedEventFactory = new EiffelSourceChangeCreatedEventFactory(NAME, URI, ns.getString("domainId"));
+            extractLinks(ns, sourceChangeCreatedEventFactory);
             CommitMessageParser cmgParser = null;
             if (getParser(EiffelSourceChangeCreatedParser.class).supports(ns.getString("tracker"))) {
                 Class<?> parserClass = Class.forName("net.praqma.utils.parsers.cmg.impl." + ns.getString("tracker"));
                 Constructor<?> constructor = parserClass.getConstructor(URL.class, String.class);
                 cmgParser = (CommitMessageParser) constructor.newInstance(new URL(ns.getString("url")), ns.getString("project"));
-                List<Models.Link> links = new ArrayList<>();
-                links.add(Models.Link.newBuilder().setType(Models.Link.LinkType.PREVIOUS_VERSION).setId(UUID.randomUUID().toString()).build());
-                links.add(Models.Link.newBuilder().setType(Models.Link.LinkType.CAUSE).setId(UUID.randomUUID().toString()).build());
                 LOG.debug(cmgParser.getClass().toString());
-                sourceChangeCreatedEventFactory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(),
-                    ns.getString("commit"),
-                    ns.getString("branch"),
-                    cmgParser
-                );
+                sourceChangeCreatedEventFactory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(), ns.getString("commit"),  ns.getString("branch"), cmgParser);
                 EiffelSourceChangeCreatedEvent.Builder event = (EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.Builder) sourceChangeCreatedEventFactory.create();
-                event.addAllLinks(links);
                 return event.build();
             } else {
                 throw new IllegalArgumentException(String.format("Illegal issue tracker chosen:%s", ns.get("tracer")));
