@@ -16,6 +16,6 @@ public class EiffelArtifactCreatedEventParser {
         mavenGroup.addArgument("-m", "--pom").dest("pom").help("Path to pom file");
 
         parser.addArgument("-l", "--links").dest("links").nargs("*").help("Add these links to the event");
-        parser.addArgument("-c", "--build-command").dest("cmd").help("The command that was used to build the artifact");
+        parser.addArgument("-c", "--build-command").dest("cmd").setDefault("").help("The command that was used to build the artifact");
     }
 }
