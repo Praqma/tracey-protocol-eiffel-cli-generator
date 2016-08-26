@@ -66,7 +66,7 @@ public class Main {
                 writer.write(JsonFormat.printer().print(event));
             }
         } else {
-            LOG.warn(JsonFormat.printer().print(event));
+            System.out.println(JsonFormat.printer().print(event));
         }
     }
 }
