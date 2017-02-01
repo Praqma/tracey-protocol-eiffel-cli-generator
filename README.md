@@ -1,5 +1,7 @@
 [![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](LICENSE) [![Build Status](https://api.travis-ci.org/Praqma/tracey-protocol-eiffel-cli-generator.svg?branch=master)](https://travis-ci.org/Praqma/tracey-protocol-eiffel-cli-generator) [![Release](https://jitpack.io/v/Praqma/tracey-protocol-eiffel-cli-generator.svg)](https://jitpack.io/#Praqma/tracey-protocol-eiffel-cli-generator)
-
+---
+maintainer: andrey9kin
+---
 # CLI generator for Eiffel messages
 
 Note! This repo is still work in progress
