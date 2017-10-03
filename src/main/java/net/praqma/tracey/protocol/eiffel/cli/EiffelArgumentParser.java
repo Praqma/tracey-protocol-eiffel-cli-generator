@@ -133,6 +133,11 @@ public class EiffelArgumentParser {
             }
         } else if(argList.contains("EiffelSourceChangeSubmittedEvent")) {
             EiffelSourceChangeSubmittedEventFactory sourceChangeSubmittedEventFactory = new EiffelSourceChangeSubmittedEventFactory(NAME, URI, ns.getString("domainId"));
+            if(ns.getString("json") != null) {
+                sourceChangeSubmittedEventFactory.addLink(EiffelSourceChangeSubmittedEventParser.changeLinkFromJson(ns.getString("json")));
+            }
+            sourceChangeSubmittedEventFactory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(), ns.getString("commit"), ns.getString("branch"));
+
             extractLinks(ns, sourceChangeSubmittedEventFactory);
             return (GeneratedMessage)sourceChangeSubmittedEventFactory.create().build();
         } else if(argList.contains("EiffelConfidenceLevelModifiedEvent")) {
