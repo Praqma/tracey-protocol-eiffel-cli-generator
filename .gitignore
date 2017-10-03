@@ -17,6 +17,7 @@ gradle-app.setting
 
 # Ignore output files
 *.json
+!src/test/resources/**/*.json
 
 # Idea
 .idea
