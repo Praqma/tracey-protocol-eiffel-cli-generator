@@ -9,6 +9,14 @@ Note! This repo is still work in progress
 This is a wrapper around [tracey-eiffel-protocol](https://github.com/Praqma/tracey-protocol-eiffel)
 Allows to extract data from different sources and generate corresponding Eiffel messages
 
+## Usage
+
+On Github Releases we push the jar-file we build from Travis when we decide to release it.
+
+If you have a jvm you can simple download this jar-file and run it:
+
+    java -jar tracey-protocol-eiffel-cli-generator.jar -h
+
 ## Supported messages
 
 ### EiffelSourceChangeCreatedEvent
