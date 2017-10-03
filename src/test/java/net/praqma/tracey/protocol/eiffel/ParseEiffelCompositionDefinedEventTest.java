@@ -32,7 +32,6 @@ public class ParseEiffelCompositionDefinedEventTest {
 
         Link l1 = Link.newBuilder().setId("8a718a03-f473-4e61-9bae-e986885fee18").setType(Link.LinkType.CAUSE).build();
         Link l2 = Link.newBuilder().setId("8a718a03-f473-4e61-9bae-e986885fee18").setType(Link.LinkType.PREVIOUS_VERSION).build();
-
         Namespace ns = eap.parseArgs(args);
         assertNotNull(ns.getList("links"));
         EiffelCompositionDefinedEvent msg = (EiffelCompositionDefinedEvent)eap.createEvent(args);

@@ -32,10 +32,11 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
+
 dependencies {
     compile 'net.sourceforge.argparse4j:argparse4j:0.7.0'
     compile 'org.slf4j:slf4j-log4j12:1.7.21'
-    compile 'com.github.Praqma:tracey-protocol-eiffel:e70358f969'
+    compile 'com.github.Praqma:tracey-protocol-eiffel:a91f5b91ba662fd894798f3e7848f3fcc2f5dee5'
     compile 'com.github.Praqma:commit-message-parser:8834a4b0fe'
     checkstyle 'com.puppycrawl.tools:checkstyle:5.9'
     pmd        'net.sourceforge.pmd:pmd-java:5.2.3'

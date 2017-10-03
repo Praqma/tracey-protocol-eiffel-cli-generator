@@ -16,11 +16,7 @@ import java.util.regex.Pattern;
 import net.praqma.tracey.protocol.eiffel.events.EiffelConfidenceLevelModifiedEventOuterClass;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
-import net.praqma.tracey.protocol.eiffel.factories.BaseFactory;
-import net.praqma.tracey.protocol.eiffel.factories.EiffelArtifactCreatedEventFactory;
-import net.praqma.tracey.protocol.eiffel.factories.EiffelCompositionDefinedEventFactory;
-import net.praqma.tracey.protocol.eiffel.factories.EiffelConfidenceLevelModifiedEventFactory;
-import net.praqma.tracey.protocol.eiffel.factories.EiffelSourceChangeCreatedEventFactory;
+import net.praqma.tracey.protocol.eiffel.factories.*;
 import net.praqma.tracey.protocol.eiffel.models.Models;
 import net.praqma.tracey.protocol.eiffel.models.Models.Link;
 import net.praqma.utils.parsers.cmg.api.CommitMessageParser;
@@ -34,7 +30,7 @@ import org.apache.log4j.Logger;
 
 public class EiffelArgumentParser {
     private static final Logger LOG = Logger.getLogger(EiffelArgumentParser.class.getName());
-    private static final Pattern LINKS = Pattern.compile("(CAUSE|PREVIOUS_VERSION):([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})",
+    private static final Pattern LINKS = Pattern.compile("(CAUSE|PREVIOUS_VERSION|CHANGE|ARTIFACT):([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})",
             Pattern.CASE_INSENSITIVE);
 
     private static final String NAME = "Eiffel command line generator";
@@ -84,6 +80,9 @@ public class EiffelArgumentParser {
 
         EiffelConfidenceLevelModifiedEventParser confidence = new EiffelConfidenceLevelModifiedEventParser(getSubParsers().addParser("EiffelConfidenceLevelModifiedEvent").defaultHelp(true));
         parsers.put(confidence.getClass(), confidence);
+
+        EiffelSourceChangeSubmittedEventParser submitted = new EiffelSourceChangeSubmittedEventParser(getSubParsers().addParser("EiffelSourceChangeSubmittedEvent"));
+        parsers.put(submitted.getClass(), submitted);
     }
 
     public <T> T getParser(Class<T> t) {
@@ -126,12 +125,16 @@ public class EiffelArgumentParser {
                 Constructor<?> constructor = parserClass.getConstructor(URL.class, String.class);
                 cmgParser = (CommitMessageParser) constructor.newInstance(new URL(ns.getString("url")), ns.getString("project"));
                 LOG.debug(cmgParser.getClass().toString());
-                sourceChangeCreatedEventFactory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(), ns.getString("commit"),  ns.getString("branch"), cmgParser);
+                sourceChangeCreatedEventFactory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(), ns.getString("commit"), ns.getString("branch"), cmgParser);
                 EiffelSourceChangeCreatedEvent.Builder event = (EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.Builder) sourceChangeCreatedEventFactory.create();
                 return event.build();
             } else {
                 throw new IllegalArgumentException(String.format("Illegal issue tracker chosen:%s", ns.get("tracer")));
             }
+        } else if(argList.contains("EiffelSourceChangeSubmittedEvent")) {
+            EiffelSourceChangeSubmittedEventFactory sourceChangeSubmittedEventFactory = new EiffelSourceChangeSubmittedEventFactory(NAME, URI, ns.getString("domainId"));
+            extractLinks(ns, sourceChangeSubmittedEventFactory);
+            return (GeneratedMessage)sourceChangeSubmittedEventFactory.create().build();
         } else if(argList.contains("EiffelConfidenceLevelModifiedEvent")) {
             EiffelConfidenceLevelModifiedEventFactory fac = new EiffelConfidenceLevelModifiedEventFactory(NAME, URI, ns.getString("domainId"));
             extractLinks(ns, fac);
