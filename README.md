@@ -11,13 +11,13 @@ Allows to extract data from different sources and generate corresponding Eiffel 
 
 ## Supported messages
 
-### EiffelSourceChangeCreatedEvent 
+### EiffelSourceChangeCreatedEvent
 
 message will be generated from the current commit, more options to come.
 
 **Example command** `EiffelSourceChangeCreatedEvent -p Praqma/tracey-protocol-eiffel-cli-generator -c HEAD~1`
 
-**Output** 
+**Output**
 
 ```
 {
@@ -73,7 +73,7 @@ message will be generated from the current commit, more options to come.
 
 **Example command** `tracey-protocol-eiffel-cli-generator.jar EiffelCompositionDefinedEvent -n Composition_A -l CAUSE:8a718a03-f473-4e61-9bae-e986885fee18`
 
-**Output** 
+**Output**
 
 ```
 {
@@ -143,3 +143,19 @@ Creates an artifact created event. Use with the `-m` option to point to a pom fi
 }
 ```
 
+
+## Releasing
+
+To release a new version of this CLI on Github release you need to tag the commit to release. This will be picked up by Travis CI.
+
+### Github auth for Travis release
+
+Release is done a ReleasePraqma user and was securely created using `travis setup releases`
+
+    $ travis setup releases
+    Detected repository as Praqma/tracey-protocol-eiffel-cli-generator, is this correct? |yes| yes
+    Username: ReleasePraqma
+    Password for ReleasePraqma: **********
+    File to Upload: build/libs/tracey-protocol-eiffel-cli-generator.jar
+    Deploy only from Praqma/tracey-protocol-eiffel-cli-generator? |yes| yes
+    Encrypt API key? |yes| yes
