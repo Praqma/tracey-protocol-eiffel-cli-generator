@@ -198,6 +198,46 @@ Creates an artifact created event. Use with the `-m` option to point to a pom fi
 }
 ```
 
+### EiffelArtifactPublishedEvent
+
+Create a message that indicates that a created artifact has been created. Use `-j` switch to point to the contents of
+an EiffelArtifactCreatedEvent to link to the meta id of that artifact and use the `-k` switch to point to where the artifact
+was published.
+
+**Example command:** `EiffelArtifactPublishedEvent -k ARTIFACTORY:http://my.repo.org -j artifactCreatedEvent.json`
+
+**Output**
+
+```
+{
+  "meta": {
+    "id": "8ffa0c7e-2140-413b-8c03-bb96ed1f79d7",
+    "type": "EiffelArtifactPublishedEvent",
+    "time": "1507104632273",
+    "source": {
+      "host": "mads-UX302LG",
+      "name": "Eiffel command line generator",
+      "uri": "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator",
+      "serializer": {
+        "groupId": "com.sun",
+        "artifactId": "Java Runtime Environment",
+        "version": "1.8.0_131"
+      }
+    }
+  },
+  "links": [{
+    "type": "ARTIFACT",
+    "id": "b1cd0c8b-bcc7-4c09-9e7c-c722b2d1b145"
+  }],
+  "data": {
+    "locations": [{
+      "type": "ARTIFACTORY",
+      "uri": "http//my.repo.org"
+    }]
+  }
+}
+```
+
 ## Releasing
 
 To release a new version of this CLI on Github release you need to tag the commit to release. This will be picked up by Travis CI.

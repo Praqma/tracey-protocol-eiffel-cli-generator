@@ -6,7 +6,6 @@ import net.sourceforge.argparse4j.inf.Subparser;
 public class EiffelArtifactCreatedEventParser {
 
     public EiffelArtifactCreatedEventParser(final Subparser parser) {
-
         ArgumentGroup manualGroup = parser.addArgumentGroup("Versioning");
         manualGroup.addArgument("-a", "--artifact-id").dest("aid").help("Artifact id");
         manualGroup.addArgument("-w", "--version").dest("vid").help("Artifact version");

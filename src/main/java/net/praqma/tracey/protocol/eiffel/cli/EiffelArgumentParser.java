@@ -5,7 +5,14 @@
  */
 package net.praqma.tracey.protocol.eiffel.cli;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.google.protobuf.GeneratedMessage;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -13,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import net.praqma.tracey.protocol.eiffel.events.EiffelConfidenceLevelModifiedEventOuterClass;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
 import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
@@ -83,6 +91,9 @@ public class EiffelArgumentParser {
 
         EiffelSourceChangeSubmittedEventParser submitted = new EiffelSourceChangeSubmittedEventParser(getSubParsers().addParser("EiffelSourceChangeSubmittedEvent"));
         parsers.put(submitted.getClass(), submitted);
+
+        EiffelArtifactPublishedEventParser publishEventParser = new EiffelArtifactPublishedEventParser(getSubParsers().addParser("EiffelArtifactPublishedEvent"));
+        parsers.put(publishEventParser.getClass(), publishEventParser);
     }
 
     public <T> T getParser(Class<T> t) {
@@ -98,19 +109,25 @@ public class EiffelArgumentParser {
             EiffelArtifactCreatedEventFactory artifactCreatedEventFactory = new EiffelArtifactCreatedEventFactory(NAME, URI, ns.getString("domainId"));
 
             //Build command is optional
-            if(ns.getString("cmd") != null) {
+            if (ns.getString("cmd") != null) {
                 artifactCreatedEventFactory.setBuildCommand(ns.getString("cmd"));
             }
 
             extractLinks(ns, artifactCreatedEventFactory);
-            if(ns.getString("pom") != null) {
+            if (ns.getString("pom") != null) {
                 artifactCreatedEventFactory.parseFromPom(ns.getString("pom"));
             } else {
                 artifactCreatedEventFactory.setGav(ns.getString("gid"), ns.getString("aid"), ns.getString("vid"));
             }
-
             return (GeneratedMessage) artifactCreatedEventFactory.create().build();
-
+        } else if(argList.contains("EiffelArtifactPublishedEvent")) {
+            EiffelArtifactPublishedEventFactory artifactPublishedEventFactory = new EiffelArtifactPublishedEventFactory(NAME, URI, ns.getString("domainId"));
+            if(ns.getString("json") != null) {
+                artifactPublishedEventFactory.addLink(EiffelArgumentParser.linkFromJson(ns.getString("json"), Link.LinkType.ARTIFACT));
+            }
+            extractLinks(ns, artifactPublishedEventFactory);
+            extractLocations(ns, artifactPublishedEventFactory);
+            return (GeneratedMessage) artifactPublishedEventFactory.create().build();
         } else if(argList.contains("EiffelCompositionDefinedEvent")) {
             EiffelCompositionDefinedEventFactory compositionDefinedEventFactory = new EiffelCompositionDefinedEventFactory(NAME, URI, ns.getString("domainId"));
             compositionDefinedEventFactory.setName(ns.getString("name"));
@@ -134,10 +151,9 @@ public class EiffelArgumentParser {
         } else if(argList.contains("EiffelSourceChangeSubmittedEvent")) {
             EiffelSourceChangeSubmittedEventFactory sourceChangeSubmittedEventFactory = new EiffelSourceChangeSubmittedEventFactory(NAME, URI, ns.getString("domainId"));
             if(ns.getString("json") != null) {
-                sourceChangeSubmittedEventFactory.addLink(EiffelSourceChangeSubmittedEventParser.changeLinkFromJson(ns.getString("json")));
+                sourceChangeSubmittedEventFactory.addLink(EiffelArgumentParser.linkFromJson(ns.getString("json"), Link.LinkType.CHANGE));
             }
             sourceChangeSubmittedEventFactory.parseFromGit(Paths.get(ns.getString("repo")).toAbsolutePath().normalize().toString(), ns.getString("commit"), ns.getString("branch"));
-
             extractLinks(ns, sourceChangeSubmittedEventFactory);
             return (GeneratedMessage)sourceChangeSubmittedEventFactory.create().build();
         } else if(argList.contains("EiffelConfidenceLevelModifiedEvent")) {
@@ -149,6 +165,18 @@ public class EiffelArgumentParser {
             return (GeneratedMessage)fac.create().build();
         } else {
             throw new IllegalArgumentException("Illegal factory chosen");
+        }
+    }
+
+    private void extractLocations(Namespace ns, EiffelArtifactPublishedEventFactory factory) {
+        if(ns.getList("location") != null) {
+            ns.getList("location").stream().forEach((link) -> {
+                String linkString = (String)link;
+                String type = linkString.split(":")[0];
+                List<String> loc = Arrays.asList(linkString.split(":"));
+                List<String> urlPart = loc.subList(1, loc.size());
+                factory.addLocation(Models.Data.Location.newBuilder().setType(type).setUri(String.join("", urlPart)).build());
+            });
         }
     }
 
@@ -165,6 +193,14 @@ public class EiffelArgumentParser {
                     factory.addLink(l);
                 }
             });
+        }
+    }
+
+    public static Models.Link linkFromJson(String sourceFile, Models.Link.LinkType type) throws IOException {
+        FileInputStream fis = new FileInputStream(sourceFile);
+        try(JsonReader reader = new JsonReader(new InputStreamReader(fis, "utf-8"))) {
+            JsonElement ele = new JsonParser().parse(reader);
+            return Models.Link.newBuilder().setId(ele.getAsJsonObject().getAsJsonObject("meta").get("id").getAsString()).setType(type).build();
         }
     }
 
