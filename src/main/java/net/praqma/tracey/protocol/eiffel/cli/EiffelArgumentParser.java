@@ -5,6 +5,7 @@
  */
 package net.praqma.tracey.protocol.eiffel.cli;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
@@ -38,7 +39,7 @@ import org.apache.log4j.Logger;
 
 public class EiffelArgumentParser {
     private static final Logger LOG = Logger.getLogger(EiffelArgumentParser.class.getName());
-    private static final Pattern LINKS = Pattern.compile("(CAUSE|PREVIOUS_VERSION|CHANGE|ARTIFACT):([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})",
+    private static final Pattern LINKS = Pattern.compile("(CAUSE|PREVIOUS_VERSION|CHANGE|ARTIFACT|COMPOSITION|REUSED_ARTIFACT):([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})",
             Pattern.CASE_INSENSITIVE);
 
     private static final String NAME = "Eiffel command line generator";
@@ -94,6 +95,9 @@ public class EiffelArgumentParser {
 
         EiffelArtifactPublishedEventParser publishEventParser = new EiffelArtifactPublishedEventParser(getSubParsers().addParser("EiffelArtifactPublishedEvent"));
         parsers.put(publishEventParser.getClass(), publishEventParser);
+        //EiffelArtifactReusedEventParser
+        EiffelArtifactReusedEventParser reused = new EiffelArtifactReusedEventParser(getSubParsers().addParser("EiffelArtifactReusedEvent"));
+        parsers.put(reused.getClass(), reused);
     }
 
     public <T> T getParser(Class<T> t) {
@@ -133,6 +137,18 @@ public class EiffelArgumentParser {
             compositionDefinedEventFactory.setName(ns.getString("name"));
             extractLinks(ns, compositionDefinedEventFactory);
             return (GeneratedMessage) compositionDefinedEventFactory.create().build();
+        } else if(argList.contains("EiffelArtifactReusedEvent")) {
+            EiffelArtifactReusedEventFactory artRFactory = new EiffelArtifactReusedEventFactory(NAME,URI, ns.getString("domainId"));
+            extractLinks(ns, artRFactory);
+            if(ns.getString("fromPublished") != null) {
+                 Link l = EiffelArgumentParser.linkFromLink(ns.getString("fromPublished"), Link.LinkType.ARTIFACT, Link.LinkType.REUSED_ARTIFACT);
+                 artRFactory.addLink(l);
+            }
+            if (ns.getString("fromComposition") != null) {
+                Link l2 = EiffelArgumentParser.linkFromJson(ns.getString("fromComposition"), Link.LinkType.COMPOSITION);
+                artRFactory.addLink(l2);
+            }
+            return (GeneratedMessage) artRFactory.create().build();
         } else if(argList.contains("EiffelSourceChangeCreatedEvent")) {
             EiffelSourceChangeCreatedEventFactory sourceChangeCreatedEventFactory = new EiffelSourceChangeCreatedEventFactory(NAME, URI, ns.getString("domainId"));
             extractLinks(ns, sourceChangeCreatedEventFactory);
@@ -194,6 +210,21 @@ public class EiffelArgumentParser {
                 }
             });
         }
+    }
+
+    public static Models.Link linkFromLink(String sourceFile, Models.Link.LinkType type, Models.Link.LinkType targetType) throws IOException {
+        FileInputStream fis = new FileInputStream(sourceFile);
+        try(JsonReader reader = new JsonReader(new InputStreamReader(fis, "utf-8"))) {
+            JsonElement ele = new JsonParser().parse(reader);
+            JsonArray linksObject = ele.getAsJsonObject().getAsJsonArray("links");
+            for(int i=0; i<linksObject.size(); i++) {
+                if(linksObject.get(i).getAsJsonObject().get("type").getAsString().equals(type.name())) {
+                    String foundId = linksObject.get(i).getAsJsonObject().get("id").getAsString();
+                    return Models.Link.newBuilder().setId(foundId).setType(targetType).build();
+                }
+            }
+        }
+        return null;
     }
 
     public static Models.Link linkFromJson(String sourceFile, Models.Link.LinkType type) throws IOException {

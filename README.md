@@ -238,6 +238,48 @@ was published.
 }
 ```
 
+### EiffelArtifactReusedEvent
+
+Create this event when you want to use a published artifact.
+
+Requires that the event has 2 links, one of type `REUSED_ARTIFACT` and one of type `COMPOSITION`
+
+Has two optional switches. One `-n` which should point to an EiffelArtifactPublishedEvent.json and another switch
+`-c` which you can use to point to a json file with an EiffelCompositionDefinedEvent.
+
+**Example command:** `EiffelArtifactReusedEvent -n ArtP.json -l COMPOSITION:187dd61a-3104-4494-8e8c-8029c5918311`
+
+**Example command:** `EiffelArtifactReusedEvent -n ArtP.json -l COMPOSITION:187dd61a-3104-4494-8e8c-8029c5918311`
+
+**Example command:** `EiffelArtifactReusedEvent -n ArtP.json -l COMPOSITION:187dd61a-3104-4494-8e8c-8029c5918311 -l REUSED_ARTIFACT:187dd61a-3104-4494-8e8c-8029c5914311`
+
+```
+{
+  "meta": {
+    "id": "46c17a91-693c-4e7c-9320-af612378f959",
+    "type": "EiffelArtifactReusedEvent",
+    "time": "1507122525856",
+    "source": {
+      "host": "mads-UX302LG",
+      "name": "Eiffel command line generator",
+      "uri": "https://github.com/Praqma/tracey-protocol-eiffel-cli-generator",
+      "serializer": {
+        "groupId": "com.sun",
+        "artifactId": "Java Runtime Environment",
+        "version": "1.8.0_131"
+      }
+    }
+  },
+  "links": [{
+    "type": "COMPOSITION",
+    "id": "187dd61a-3104-4494-8e8c-8029c5918311"
+  }, {
+    "type": "REUSED_ARTIFACT",
+    "id": "b1cd0c8b-bcc7-4c09-9e7c-c722b2d1b145"
+  }]
+}
+```
+
 ## Releasing
 
 To release a new version of this CLI on Github release you need to tag the commit to release. This will be picked up by Travis CI.
